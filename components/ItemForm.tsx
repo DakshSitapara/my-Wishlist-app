@@ -76,7 +76,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
     initial={{ y: "100%", opacity: 0 }}
     animate={{ y: 0, opacity: 1 }}
     transition={{ type: "spring", stiffness: 100, damping: 20 }}
-    className="fixed bottom-hafe left-0 right-0 px-4 pb-4 z-50"
+    className="fixed bottom-half left-0 right-0 px-4 pb-4 z-50"
   >
     <Card className="relative p-8 w-full max-w-2xl mx-auto shadow-2xl bg-white rounded-3xl">
       <Form {...form}>
