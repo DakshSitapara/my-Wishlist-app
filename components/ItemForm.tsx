@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {Form,FormControl,FormField,FormItem,FormLabel,FormMessage} from "@/components/ui/form";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
-import { WishlistItem } from "../types/types";
+import { WishlistItem } from "../types/item-types";
 import { motion } from "framer-motion";
 
 // Form validation schema
@@ -265,4 +265,3 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
     </motion.div>
   );
 }  
-

@@ -7,7 +7,7 @@ import Navbar from '../guest/guestNavbar';
 import { ItemForm } from '../../components/ItemForm';
 import ItemList from '../../components/ItemList';
 import { EditItemForm } from '../../components/EditItemForm';
-import { WishlistItem } from '../../types/types';
+import { WishlistItem } from '../../types/item-types';
 import SidebarFilter from '@/components/SidebarFilter';
 import ClientOnly from '@/components/ClientOnly';
 

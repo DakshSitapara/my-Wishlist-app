@@ -3,7 +3,7 @@
 import { SquarePen, Trash2, Link } from 'lucide-react';
 import React from 'react';
 import Image from 'next/image';
-import { WishlistItem } from '../types/types';
+import { WishlistItem } from '../types/item-types';
 
 interface ItemListProps {
   items: WishlistItem[];
