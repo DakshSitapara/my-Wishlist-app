@@ -1,7 +1,7 @@
 'use client';
 
-import { useState,useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+// import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 import Navbar from '../guest/guestNavbar';
 import { ItemForm } from '../../components/ItemForm';
@@ -13,13 +13,13 @@ import ClientOnly from '@/components/ClientOnly';
 
 export default function GuestPage() {
 
-    const router = useRouter();
-      useEffect(() => {
-        const user = (localStorage.getItem('activeUser'));
-        if (!user) {
-          router.push('/login');
-        }
-      }, [router]);
+    // const router = useRouter();
+    //   useEffect(() => {
+    //     const user = (localStorage.getItem('activeUser'));
+    //     if (!user) {
+    //       router.push('/login');
+    //     }
+    //   }, [router]);
 
 
   const [items, setItems] = useState<WishlistItem[]>([]);

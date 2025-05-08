@@ -1,4 +1,4 @@
-
+// localStorage.ts
   export const getWishlistForUser = <T>(key: string): T | null => {
     try {
       const item = localStorage.getItem(key);

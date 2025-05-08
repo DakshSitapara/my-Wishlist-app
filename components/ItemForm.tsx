@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { WishlistItem } from "../types/item-types";
 import { motion } from "framer-motion";
@@ -18,6 +17,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
+import { toast } from 'react-toastify';
+
 
 // Form validation schema
 const itemFormSchema = z.object({
@@ -67,9 +68,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
       
     onAddItem(newItem);
     form.reset();
-    toast.success("Item Added!", {
-      description: "Your wishlist item has been successfully added.",
-    });
+    toast.success("Item Added!");
     setIsSubmitting(false);
     onClose();
   };
@@ -251,7 +250,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                             <DropdownMenuItem
                               key={category}
                               onSelect={() => field.onChange(category)}
-                              className={field.value === category ? "bg-gray-100 font-medium" : ""}
+                              className={field.value === category ? "bg-gray-100 text-black font-medium" : ""}
                             >
                               {category}
                             </DropdownMenuItem>
@@ -275,7 +274,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
-                            variant="outline"
+                            variant="outline"  
                             className="w-full justify-between text-sm text-gray-700"
                           >
                             {field.value || "Select a priority"}
@@ -287,7 +286,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                             <DropdownMenuItem
                               key={priority}
                               onSelect={() => field.onChange(priority)}
-                              className={field.value === priority ? "bg-gray-100 font-medium" : ""}
+                              className={field.value === priority ? "bg-gray-100 text-black font-medium" : ""}
                             >
                               {priority}
                             </DropdownMenuItem>

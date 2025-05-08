@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { WishlistItem } from '../types/item-types';
-import { toast } from 'sonner';
+import { toast } from 'react-toastify';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -233,7 +233,7 @@ export function EditItemForm({ item, onUpdateItem, onClose }: EditItemFormProps)
                       <FormControl>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="w-full justify-between text-sm text-gray-700">
+                            <Button variant="ghost" className="w-full justify-between text-sm text-gray-700">
                               {field.value || 'Select a category'}
                               <ChevronDown className="ml-2 h-4 w-4" />
                             </Button>
@@ -252,7 +252,7 @@ export function EditItemForm({ item, onUpdateItem, onClose }: EditItemFormProps)
                               <DropdownMenuItem
                                 key={category}
                                 onSelect={() => field.onChange(category)}
-                                className={field.value === category ? 'bg-gray-100 font-medium' : ''}
+                                className={field.value === category ? 'bg-gray-100 text-black font-medium' : ''}
                               >
                                 {category}
                               </DropdownMenuItem>
@@ -274,7 +274,7 @@ export function EditItemForm({ item, onUpdateItem, onClose }: EditItemFormProps)
                       <FormControl>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="w-full justify-between text-sm text-gray-700">
+                            <Button variant="ghost" className="w-full justify-between text-sm text-gray-700">
                               {field.value || 'Select a priority'}
                               <ChevronDown className="ml-2 h-4 w-4" />
                             </Button>
@@ -284,7 +284,7 @@ export function EditItemForm({ item, onUpdateItem, onClose }: EditItemFormProps)
                               <DropdownMenuItem
                                 key={priority}
                                 onSelect={() => field.onChange(priority)}
-                                className={field.value === priority ? 'bg-gray-100 font-medium' : ''}
+                                className={field.value === priority ? 'bg-gray-100 text-black font-medium' : ''}
                               >
                                 {priority}
                               </DropdownMenuItem>

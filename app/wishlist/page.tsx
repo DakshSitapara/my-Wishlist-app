@@ -9,14 +9,10 @@ import ItemList from '../../components/ItemList';
 import { EditItemForm } from '../../components/EditItemForm';
 import { WishlistItem } from '../../types/item-types';
 import SidebarFilter from '@/components/SidebarFilter';
-import { useLocalStorageState } from '@/components/useLocalStorageState';
+import { useLocalStorageState } from '@/app/utils/useLocalStorageState';
 import ClientOnly from '@/components/ClientOnly';
 import { getWishlistForUser, setLocalStorage } from '../utils/localStorage';
-// import {
-//   ResizableHandle,
-//   ResizablePanel,
-//   ResizablePanelGroup,
-// } from "@/components/ui/resizable";
+
 
 export default function WishlistPage() {
   const router = useRouter();

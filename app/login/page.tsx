@@ -8,10 +8,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
+import { EyeClosed, Eye } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setemail] = useState('');
   const [password, setpassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleLogin = (e: React.FormEvent) => {
@@ -47,18 +49,36 @@ export default function LoginPage() {
                 required
               />
             </div>
-
+            
             <div className="grid gap-2">
-              <Label htmlFor="password">password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder='Enter your password'
-                value={password}
-                onChange={(e) => setpassword(e.target.value)}
-                required
-              />
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setpassword(e.target.value)}
+                  required
+                  className="pr-10"
+                />
+                <Button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <Eye className="h-4 w-4" />
+                  ) : (
+                    <EyeClosed className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
             </div>
+            
             <Button type="submit" className="w-full">
               Login
             </Button>
