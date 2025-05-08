@@ -97,6 +97,7 @@ export default function WishlistPage() {
     const matchesPrice = price >= min && price <= max;
     const matchesPriority =
       selectedPriorities.length === 0 || selectedPriorities.includes(item.priority);
+      
     return (
       matchesSearch && matchesCategory && matchesStatus && matchesPrice && matchesPriority
     );
@@ -166,12 +167,22 @@ export default function WishlistPage() {
 
           {/* Item List */}
           <ClientOnly>
-            <ItemList
-              items={filteredItems}
-              onEdit={handleEditItem}
-              onDelete={handleDeleteItem}
-              onTogglePurchased={handleTogglePurchased}
-            />
+            {items.length === 0 ? (
+              <div className="text-center text-gray-500 mt-70 text-4xl">
+                <h1>Your wishlist is empty. Start by adding an item!</h1>
+              </div>
+            ) : filteredItems.length === 0 ? (
+              <div className="text-center text-gray-500 mt-70 text-4xl">
+                <h1>No items match your current filters.</h1>
+              </div>
+            ) : (
+              <ItemList
+                items={filteredItems}
+                onEdit={handleEditItem}
+                onDelete={handleDeleteItem}
+                onTogglePurchased={handleTogglePurchased}
+              />
+            )}
           </ClientOnly>
         </div>
       </div>

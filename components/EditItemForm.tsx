@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -26,6 +26,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { motion } from 'framer-motion';
+import {
+  Dialog,
+  DialogClose,
+} from '@/components/ui/dialog'; // ✅ ShadCN UI Dialog
 
 const editItemFormSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -83,9 +87,24 @@ export function EditItemForm({ item, onUpdateItem, onClose }: EditItemFormProps)
     onClose();
     toast.success('Item updated successfully!');
   };
+  const dialogRef = useRef<HTMLDivElement>(null);
 
+  const handleClickOutside = (event: React.MouseEvent) => {
+    const target = event.target as HTMLElement;
+  
+    // Check if click was inside the dialog
+    if (dialogRef.current && dialogRef.current.contains(target)) return;
+  
+    // Avoid closing if the dropdown is open
+    if (target.closest("[data-dropdown-menu]")) return;
+  
+    onClose();
+  };
+  
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+      <Dialog open onOpenChange={onClose}>
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50" 
+          onClick={handleClickOutside}>
       <motion.div
         initial={{ y: "100%", opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -93,7 +112,9 @@ export function EditItemForm({ item, onUpdateItem, onClose }: EditItemFormProps)
         className="fixed bottom-half left-0 right-0 px-4 pb-4 z-50"
       >
     
-        <Card className="relative p-8 w-full max-w-2xl mx-auto shadow-2xl bg-white rounded-3xl">
+        <Card 
+        ref={dialogRef}
+        className="max-h-[90vh] overflow-y-auto relative p-8 w-full max-w-2xl mx-auto shadow-2xl bg-white rounded-3xl">
           <button
             onClick={onClose}
             className="absolute top-4 right-6 p-2 text-gray-500 hover:text-white hover:bg-gray-800 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
@@ -103,7 +124,7 @@ export function EditItemForm({ item, onUpdateItem, onClose }: EditItemFormProps)
           </button>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <h2 className="text-2xl font-bold mb-4 text-gray-800">Edit Wishlist Item</h2>
+              <h2 className="justify-self-center text-2xl font-bold mb-4 text-gray-800">Edit Wishlist Item</h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
@@ -217,8 +238,8 @@ export function EditItemForm({ item, onUpdateItem, onClose }: EditItemFormProps)
                               <ChevronDown className="ml-2 h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-full">
-                            {[
+                          <DropdownMenuContent className="w-full" data-dropdown-menu>
+                          {[
                               'Electronics',
                               'Books',
                               'Clothing',
@@ -258,8 +279,8 @@ export function EditItemForm({ item, onUpdateItem, onClose }: EditItemFormProps)
                               <ChevronDown className="ml-2 h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-full">
-                            {['High', 'Medium', 'Low'].map((priority) => (
+                          <DropdownMenuContent className="w-full" data-dropdown-menu>
+                          {['High', 'Medium', 'Low'].map((priority) => (
                               <DropdownMenuItem
                                 key={priority}
                                 onSelect={() => field.onChange(priority)}
@@ -294,6 +315,10 @@ export function EditItemForm({ item, onUpdateItem, onClose }: EditItemFormProps)
           </Form>
         </Card>
       </motion.div>
-    </div>
+      </div>
+      <DialogClose asChild>
+    </DialogClose>
+</Dialog>
+
   ); 
 }
