@@ -4,7 +4,8 @@ import React from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp,RotateCcw } from 'lucide-react';
+import { handleResetFilters } from '@/app/utils/resetFilters'; 
 
 interface SidebarFilterProps {
   selectedCategories: string[];
@@ -56,14 +57,24 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
     setPriceRange((prev) => ({ ...prev, [type]: value }));
   };
 
+
   const [isCategoriesOpen, setIsCategoriesOpen] = React.useState(true);
   const [isPriceRangeOpen, setIsPriceRangeOpen] = React.useState(true);
   const [isStatusOpen, setIsStatusOpen] = React.useState(true);
   const [isPriorityOpen, setIsPriorityOpen] = React.useState(true);
 
   return (
-    <aside className="w-64 bg-white shadow-md rounded-md p-4 h-full overflow-y-auto border-r border-gray-200">
-      <h2 className="font-semibold text-lg mb-4 text-gray-800 uppercase">Filters</h2>
+    <aside className="w-64 bg-white shadow-md rounded-md p-4 h-full overflow-y-overly border-r border-gray-200">
+    <div className="flex items-center justify-between mb-3">
+      <h2 className="font-semibold text-lg text-gray-800 uppercase">Filters</h2>
+      <button onClick={() =>
+            handleResetFilters(setSelectedCategories, setSelectedStatuses, setPriceRange, setSelectedPriorities)}
+        className="p-2 rounded-full text-gray-600 hover:bg-gray-600 hover:text-white transition duration-300 " 
+        title="Reset Filters"
+      >
+        <RotateCcw size={18} />
+      </button>
+    </div>
 
       {/* Categories */}
       <div className="mb-6">
@@ -196,8 +207,10 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
           )}
         </div>
       </div>
+            
     </aside>
   );
 };
 
 export default SidebarFilter;
+

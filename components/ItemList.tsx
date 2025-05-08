@@ -14,7 +14,7 @@ interface ItemListProps {
 
 const ItemList: React.FC<ItemListProps> = ({ items, onEdit, onDelete, onTogglePurchased }) => {
   return (
-    <div className="grid gap-6 mt-6 max-w-6xl mx-auto grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+    <div className=" flex flex-justify gap-6 mt-6 max-w-6xl mx-auto grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((item) => (
         <div
           key={item.id}

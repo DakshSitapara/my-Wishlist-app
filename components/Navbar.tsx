@@ -20,14 +20,22 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
+import { handleResetFilters } from '@/app/utils/resetFilters';
 
 interface NavbarProps {
   username?: string;
   onAddItemClick: () => void;
   onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  setSelectedCategories: React.Dispatch<React.SetStateAction<string[]>>;
+  setSelectedStatuses: React.Dispatch<React.SetStateAction<string[]>>;
+  setPriceRange: React.Dispatch<React.SetStateAction<{ min: string; max: string }>>;
+  setSelectedPriorities: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onAddItemClick, onSearchChange }) => {
+const Navbar: React.FC<NavbarProps> = ({ onAddItemClick, onSearchChange,setSelectedCategories,
+  setSelectedStatuses,
+  setPriceRange,
+  setSelectedPriorities }) => {
   const [username, setUsername] = useState('');
   const router = useRouter();
 
@@ -101,7 +109,10 @@ const Navbar: React.FC<NavbarProps> = ({ onAddItemClick, onSearchChange }) => {
                         Cancel
                       </AlertDialogCancel>
                       <AlertDialogAction
-                        onClick={handleLogout}
+                      onClick={() => {
+                        handleLogout();
+                        handleResetFilters(setSelectedCategories, setSelectedStatuses, setPriceRange, setSelectedPriorities);
+                      }}
                         className="bg-red-600 text-white px-4 py-2 rounded-md font-medium shadow-md border border-red-600 hover:bg-white hover:text-red-600 transition-colors duration-300">
                         Confirm Logout
                       </AlertDialogAction>

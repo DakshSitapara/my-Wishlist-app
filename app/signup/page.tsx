@@ -13,7 +13,7 @@ export default function SignupPage() {
   const [name,setname] = useState('');
   const [email, setemail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  // const [confirmPassword, setConfirmPassword] = useState('');
 
   const router = useRouter();
 
@@ -23,10 +23,10 @@ export default function SignupPage() {
       alert('Please enter your name');
       return;
     }
-    if (password !== confirmPassword) {
-      alert('Passwords do not match');
-      return;
-    }
+    // if (password !== confirmPassword) {
+    //   alert('Passwords do not match');
+    //   return;
+    // }
   
     const success = signup(name.trim(), email.trim(), password); // Make sure signup returns boolean
     if (success) {
@@ -73,23 +73,23 @@ export default function SignupPage() {
                 <Input
                     id="password"
                     type="password"
-                    placeholder="•••••••••••••"
+                    placeholder='Enter your password'
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
             </div>
-            <div className="grid gap-2">
+            {/* <div className="grid gap-2">
                 <Label htmlFor="confirm-password">Confirm password</Label>
                 <Input
                     id="confirm-password"
                     type="password"
-                    placeholder="•••••••••••••"
-                    value={confirmPassword}
+                    placeholder='Enter your original password'
+                    value={confirmPassword} 
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                 />
-            </div>
+            </div> */}
 
             <Button type="submit" className="w-full">
             Sign Up

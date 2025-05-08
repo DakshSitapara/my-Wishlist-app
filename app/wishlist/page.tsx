@@ -139,6 +139,10 @@ export default function WishlistPage() {
           <Navbar
             onAddItemClick={() => setIsFormVisible(true)}
             onSearchChange={handleSearchChange}
+            setSelectedCategories={setSelectedCategories}
+            setSelectedStatuses={setSelectedStatuses}
+            setPriceRange={setPriceRange}
+            setSelectedPriorities={setSelectedPriorities}
           />
         </div>
 

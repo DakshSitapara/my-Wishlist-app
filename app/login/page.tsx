@@ -21,8 +21,8 @@ export default function LoginPage() {
     if (success) {
       router.push('/wishlist');
     } else {
-      alert('Please enter your name');
-    }
+      router.push('/login');
+      }
   };
 
   return (
@@ -53,7 +53,7 @@ export default function LoginPage() {
               <Input
                 id="password"
                 type="password"
-                placeholder="•••••••••••••"
+                placeholder='Enter your password'
                 value={password}
                 onChange={(e) => setpassword(e.target.value)}
                 required

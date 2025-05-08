@@ -13,15 +13,23 @@ import { Card } from "@/components/ui/card";
 import { WishlistItem } from "../types/item-types";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
+
 
 // Form validation schema
 const itemFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
   link: z.string().url("Please enter a valid URL"),
-  price: z.number().refine((val) => !isNaN((val)) && (val) > 0, {
+  price: z.coerce.number().refine((val) => val > 0, {
     message: "Please enter a valid price",
-  }),
+  }),  
   imageUrl: z.string().url("Please enter a valid image URL").optional(),
   category: z.string().min(1, "Please select a category"), 
   priority: z.enum(["High", "Medium", "Low"], {
@@ -60,7 +68,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
       imageUrl: values.imageUrl || "",
       isPurchased: false,
     };
-  
+      
     onAddItem(newItem);
     form.reset();
     toast.success("Item Added!", {
@@ -198,56 +206,84 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* Categories Input */}
             <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-800 font-semibold">Category</FormLabel>
-                  <FormControl>
-                    <select
-                      {...field}
-                      value={field.value || ''} // 🛠️ Always bind value safely
-                      className="w-full md:w-[100%] rounded-md border border-gray-300 bg-white py-2 px-3 text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
-                    >
-                      <option value="" disabled hidden>-- Select a category --</option>
-                      <option value="Electronics">Electronics</option>
-                      <option value="Books">Books</option>
-                      <option value="Clothing">Clothing</option>
-                      <option value="Home">Home</option>
-                      <option value="Beauty">Beauty</option>
-                      <option value="Sports">Sports</option>
-                      <option value="Toys">Toys</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gray-800 font-semibold">Category</FormLabel>
+                <FormControl>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-between text-sm text-gray-700"
+                      >
+                        {field.value || "Select a category"}
+                        <ChevronDown className="ml-2 h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-full">
+                      {[
+                        "Electronics",
+                        "Books",
+                        "Clothing",
+                        "Home",
+                        "Beauty",
+                        "Sports",
+                        "Toys",
+                        "Other",
+                      ].map((category) => (
+                        <DropdownMenuItem
+                          key={category}
+                          onSelect={() => field.onChange(category)}
+                          className={field.value === category ? "bg-gray-100 font-medium" : ""}
+                        >
+                          {category}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
             {/* Priority Input */}
             <FormField
-              control={form.control}
-              name="priority"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-800 font-semibold">Priority</FormLabel>
-                  <FormControl>
-                    <select
-                      {...field}
-                      value={field.value || ""}
-                      className="w-full md:w-[100%] rounded-md border border-gray-300 bg-white py-2 px-3 text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm"
-                    >
-                      <option value="" disabled hidden>-- Select a priority --</option>
-                      <option value="High">High</option>
-                      <option value="Medium">Medium</option>
-                      <option value="Low">Low</option>
-                    </select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            control={form.control}
+            name="priority"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gray-800 font-semibold">Priority</FormLabel>
+                <FormControl>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-between text-sm text-gray-700"
+                      >
+                        {field.value || "Select a priority"}
+                        <ChevronDown className="ml-2 h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-full">
+                      {["High", "Medium", "Low"].map((priority) => (
+                        <DropdownMenuItem
+                          key={priority}
+                          onSelect={() => field.onChange(priority)}
+                          className={field.value === priority ? "bg-gray-100 font-medium" : ""}
+                        >
+                          {priority}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           </div>
 
           {/* Buttons */}
@@ -261,7 +297,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
             </Button>
             <Button 
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !form.formState.isValid}
               className=" bg-black text-white font-semibold  px-4 py-2  rounded-lg  hover:bg-gray-300  hover:text-black transition duration-300 transform hover:scale-105"
               >
               {isSubmitting ? "Adding..." : "Add to Wishlist"}
