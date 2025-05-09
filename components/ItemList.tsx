@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { SquarePen, Trash2, Link } from 'lucide-react';
+import { SquarePen, Trash2, ExternalLink } from 'lucide-react';
 import React from 'react';
-import Image from 'next/image';
+import ImageWithSkeleton from './ImageWithSkeleton'; 
 import { WishlistItem } from '../types/item-types';
 
 interface ItemListProps {
@@ -19,14 +19,14 @@ const ItemList: React.FC<ItemListProps> = ({ items, onEdit, onDelete, onTogglePu
 
   return (
     <>
-      <div className="flex gap-6 mt-6 max-w-6xl mx-auto grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 mt-6 max-w-6xl mx-auto grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ">
         {items.map((item) => (
           <div
             key={item.id}
-            className="bg-white shadow-lg rounded-xl p-4 transition-all duration-200 hover:shadow-md border border-gray-200 relative flex flex-col"
+            className="bg-white shadow-lg rounded-xl p-4 transition-all duration-200 hover:shadow-md border border-gray-200 relative flex flex-col hover:scale-105"
           >
             <div
-              className={`absolute top-5 left-5 px-3 py-1 rounded-md text-white font-semibold text-xs 
+              className={`absolute top-5 left-5 px-3 py-1 rounded-md text-white font-semibold text-xs z-10
               ${item.priority === 'High' ? 'bg-red-500' : 
                item.priority === 'Medium' ? 'bg-yellow-500' : 'bg-gray-500'}`}
             >
@@ -34,14 +34,7 @@ const ItemList: React.FC<ItemListProps> = ({ items, onEdit, onDelete, onTogglePu
             </div>
 
             {item.imageUrl && (
-              <Image
-                src={item.imageUrl.trimStart() || '/fallback.jpg'}
-                alt={item.name}
-                width={500}
-                height={300}
-                className="w-full h-48 object-cover rounded-md mb-4"
-                priority
-              />
+              <ImageWithSkeleton src={item.imageUrl} alt={item.name} />
             )}
 
             <div className="flex justify-between items-center mb-2">
@@ -49,7 +42,9 @@ const ItemList: React.FC<ItemListProps> = ({ items, onEdit, onDelete, onTogglePu
               <p className="text-gray-700 font-bold text-lg">₹ {item.price}</p>
             </div>
 
-            <p className="text-gray-600 mt-2">{item.description}</p>
+            <p className="text-gray-600 mt-2 sm:text-base md:text-lg overflow-hidden text-ellipsis whitespace-nowrap  ">
+                {item.description}
+              </p>
 
             <div className="flex items-center justify-between mt-3 flex-wrap gap-2">
               {item.category && (
@@ -85,12 +80,12 @@ const ItemList: React.FC<ItemListProps> = ({ items, onEdit, onDelete, onTogglePu
             <div className="mt-4 flex justify-between items-center gap-4">
               {item.link && (
                 <a
+                  title='View item'
                   href={item.link}
-                  target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center text-purple-600 hover:text-purple-800"
                 >
-                  <Link className="w-5 h-5 mr-2" />
+                  <ExternalLink className="w-5 h-5 mr-2" />
                   View Item
                 </a>
               )}
@@ -100,8 +95,9 @@ const ItemList: React.FC<ItemListProps> = ({ items, onEdit, onDelete, onTogglePu
                   onClick={() => onEdit(item)}
                   title="Edit item"
                   className="flex items-center justify-center w-7 h-7 text-gray-600 hover:text-indigo-700 hover:bg-indigo-300 rounded-md transition-colors"
-                >
+               >
                   <SquarePen className="w-5 h-5" />
+                  
                 </button>
 
                 <button

@@ -12,6 +12,8 @@ import SidebarFilter from '@/components/SidebarFilter';
 import { useLocalStorageState } from '@/app/utils/useLocalStorageState';
 import ClientOnly from '@/components/ClientOnly';
 import { getWishlistForUser, setLocalStorage } from '../utils/localStorage';
+import { toast } from "react-toastify";
+
 
 
 export default function WishlistPage() {
@@ -63,6 +65,7 @@ export default function WishlistPage() {
   const handleDeleteItem = (id: string) => {
     const updated = items.filter((item) => item.id !== id);
     persistItems(updated);
+    toast.success("Item deleted successfully!");
   };
   
 
@@ -71,12 +74,11 @@ export default function WishlistPage() {
     const updated = items.map((item) =>
       item.id === id ? { ...item, isPurchased: !item.isPurchased } : item
     );
-    persistItems(updated);
+    persistItems(updated)
   };
   
-
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setSearch(e.target.value);
+    setSearch(e.target.value);  
 
   // Filters
   const filteredItems = items.filter((item) => {
@@ -112,7 +114,7 @@ export default function WishlistPage() {
   }, [router]);
 
   return (
-    <div className="flex justify-around items-start bg-gray-100 h-screen overflow-auto">
+    <div className="flex justify-around items-start bg-gray-100 h-screen overflow-auto ">
       {/* Sidebar */}
       <aside className="w-64 bg-white shadow-md rounded-md fixed top-20 left-0 h-full z-10">
         <ClientOnly>
@@ -169,7 +171,8 @@ export default function WishlistPage() {
               </div>
             ) : filteredItems.length === 0 ? (
               <div className="text-center text-gray-500 mt-70 text-4xl">
-                <h1>No items match your current filters.</h1>
+                <h1>No items match your current search and filters.</h1>
+                <p>Try adjusting the search term or filters.</p>
               </div>
             ) : (
               <ItemList

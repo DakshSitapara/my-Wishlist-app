@@ -24,7 +24,7 @@ const WelcomePage = () => {
         transition={{ delay: 0.5, duration: 0.8 }}
         className="text-lg mb-10 text-center max-w-xl"
       >
-        Your dream items, all in one place. Start by logging in or creating a new account!
+          Your dream items, all in one place. Log in or create an account to get started!
       </motion.p>
 
       <motion.div 
