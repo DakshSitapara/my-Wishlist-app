@@ -48,7 +48,6 @@ export default function WishlistPage() {
     setIsFormVisible(false);
   };
   
-
   // Edit
   const handleEditItem = (item: WishlistItem) => setEditingItem(item);
 
@@ -60,7 +59,6 @@ export default function WishlistPage() {
     setEditingItem(null);
   };
   
-
   // Delete
   const handleDeleteItem = (id: string) => {
     const updated = items.filter((item) => item.id !== id);
@@ -68,7 +66,6 @@ export default function WishlistPage() {
     toast.success("Item deleted successfully!");
   };
   
-
   // Toggle Purchased
   const handleTogglePurchased = (id: string) => {
     const updated = items.map((item) =>
