@@ -36,10 +36,11 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
-        >
+        > 
           {children}
         </ThemeProvider>
-        <ToastContainer position="top-right" autoClose={3000} />
+        
+        <ToastContainer  position="bottom-right"   autoClose={2000} theme="dark"/>
       </body>
     </html>
   );

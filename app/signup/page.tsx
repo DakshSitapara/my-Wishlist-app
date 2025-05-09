@@ -10,7 +10,6 @@ import { signup } from '@/app/signup/signupUtils';
 import Link from 'next/link';
 import { EyeClosed, Eye } from 'lucide-react';
 
-
 export default function SignupPage() {
   const [name,setname] = useState('');
   const [email, setemail] = useState('');
