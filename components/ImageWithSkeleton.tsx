@@ -31,7 +31,7 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({ src, alt }) => {
         className={`w-full h-48 object-cover rounded-md transition-opacity duration-500 ${
           loading ? 'opacity-0' : 'opacity-100'
         }`}
-        onLoadingComplete={() => setLoading(false)}
+        onLoad={() => setLoading(false)}
         onError={() => {
           setError(true);
           setLoading(false);
