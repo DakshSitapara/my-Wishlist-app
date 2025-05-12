@@ -111,8 +111,8 @@ export function EditItemForm({ item, onUpdateItem, onClose }: EditItemFormProps)
       >
     
         <Card 
-        ref={dialogRef}
-        className="max-h-[90vh] overflow-y-auto relative p-8 w-full max-w-2xl mx-auto shadow-2xl bg-white rounded-3xl">
+          ref={dialogRef}
+          className="max-h-[90vh] overflow-y-auto relative p-8 w-full max-w-2xl mx-auto shadow-2xl bg-white rounded-3xl">
           <button
             onClick={onClose}
             className="absolute top-4 right-6 p-2 text-gray-500 hover:text-white hover:bg-gray-800 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
@@ -231,7 +231,9 @@ export function EditItemForm({ item, onUpdateItem, onClose }: EditItemFormProps)
                       <FormControl>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="w-full justify-between text-sm text-gray-700">
+                            <Button 
+                            className="w-full justify-between bg-white text-sm text-gray-700 border border-gray-300 shadow"
+                            >
                               {field.value || 'Select a category'}
                               <ChevronDown className="ml-2 h-4 w-4" />
                             </Button>
@@ -272,7 +274,9 @@ export function EditItemForm({ item, onUpdateItem, onClose }: EditItemFormProps)
                       <FormControl>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="w-full justify-between text-sm text-gray-700">
+                            <Button 
+                            className="w-full justify-between bg-white text-sm text-gray-700 border border-gray-300 shadow"
+                            >
                               {field.value || 'Select a priority'}
                               <ChevronDown className="ml-2 h-4 w-4" />
                             </Button>
@@ -300,12 +304,13 @@ export function EditItemForm({ item, onUpdateItem, onClose }: EditItemFormProps)
                 <Button
                   type="button"
                   onClick={onClose}
-                  variant="outline"
-                  className="border border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-black"
-                >
+                  className="border border-gray-300 text-gray-800 bg-white hover:bg-gray-300 hover:text-black rounded-md px-4 py-2 transition-colors hover:scale-105"
+                  >
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white">
+                <Button type="submit"
+                className="bg-black text-white font-semibold px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-black transition duration-300 transform hover:scale-105"
+                >
                   Update Item
                 </Button>
               </div>

@@ -95,9 +95,10 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
       animate={{ y: 0, opacity: 1 }}
       transition={{ type: "spring", stiffness: 100, damping: 20 }}
       className="fixed bottom-half left-0 right-0 px-4 pb-4 z-50"
+    > 
 
-    >
-      <Card ref={dialogRef} 
+      <Card 
+        ref={dialogRef} 
         className="max-h-[90vh] overflow-y-auto relative p-8 w-full max-w-2xl mx-auto shadow-2xl bg-white rounded-3xl">
         <button
           onClick={onClose}
@@ -123,7 +124,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                         autoFocus
                         placeholder="Enter item name..." 
                         {...field}
-                        className="text-black placeholder:text-gray-400 border border-gray-300 focus:border-purple-500 focus:ring-purple-500"
+                        className="text-black placeholder:text-gray-400 border border-gray-300 focus:outline-none focus:ring-0 focus:border-gray-500 focus:shadow-md"
                       />
                     </FormControl>
                     <FormMessage />
@@ -140,7 +141,6 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                     <FormLabel className="text-gray-800 font-semibold">Price</FormLabel>
                     <FormControl>
                       <Input 
-                        autoFocus
                         type="number" 
                         step="0" 
                         placeholder="₹ 0" 
@@ -186,7 +186,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                     <FormLabel className="text-gray-800 font-semibold">Item Link</FormLabel>
                     <FormControl>
                       <Input 
-                        autoFocus
+                        
                         placeholder="https://..." 
                         {...field}
                         className="text-black placeholder:text-gray-400 border border-gray-300 focus:border-purple-500 focus:ring-purple-500"
@@ -206,7 +206,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                     <FormLabel className="text-gray-800 font-semibold">Item Image URL</FormLabel>
                     <FormControl>
                       <Input 
-                        autoFocus
+                        
                         placeholder="Enter image URL..." 
                         {...field}
                         className="text-black placeholder:text-gray-400 border border-gray-300 focus:border-purple-500 focus:ring-purple-500"
@@ -230,8 +230,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
-                            variant="outline"
-                            className="w-full justify-between text-sm text-gray-700"
+                            className="w-full justify-between bg-white text-sm text-gray-400 border border-gray-300 shadow"
                           >
                             {field.value || "Select a category"}
                             <ChevronDown className="ml-2 h-4 w-4" />
@@ -275,8 +274,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
-                            variant="outline"  
-                            className="w-full justify-between text-sm text-gray-700"
+                            className="w-full justify-between bg-white text-sm text-gray-400 border border-gray-300 shadow"
                           >
                             {field.value || "Select a priority"}
                             <ChevronDown className="ml-2 h-4 w-4" />
