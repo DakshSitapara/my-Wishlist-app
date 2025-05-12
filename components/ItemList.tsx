@@ -117,35 +117,35 @@ const ItemList: React.FC<ItemListProps> = ({ items, onEdit, onDelete, onTogglePu
       </div>
 
       {showConfirm && itemToDelete && (
-        <div className="fixed inset-0 z-50 bg-black/40 bg-opacity-40 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-sm">
-            <h3 className="text-lg font-semibold text-gray-800">Delete Item</h3>
-            <p className="text-sm text-gray-600 mt-2 mb-6">Are you sure you want to delete this item? This action cannot be undone.</p>
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => {
+      <div className="fixed inset-0 z-50 bg-black/40 bg-opacity-40 flex items-center justify-center">
+        <div className="bg-white p-6 rounded-xl shadow-xl w-full max-w-sm">
+          <h3 className="text-lg font-semibold text-gray-800">Delete Item</h3>
+          <p className="text-sm text-gray-600 mt-2 mb-6">Are you sure you want to delete this item? This action cannot be undone.</p>
+          <div className="flex justify-end space-x-3">
+            <button
+              onClick={() => {
+                setShowConfirm(false);
+                setItemToDelete(null);
+              }}
+              className="px-4 py-2 text-sm rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                if (itemToDelete) {
+                  onDelete(itemToDelete);
                   setShowConfirm(false);
                   setItemToDelete(null);
-                }}
-                className="px-4 py-2 text-sm rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  if (itemToDelete) {
-                    onDelete(itemToDelete);
-                    setShowConfirm(false);
-                    setItemToDelete(null);
-                  }
-                }}
-                className="px-4 py-2 text-sm rounded-md bg-red-600 text-white hover:bg-red-700"
-              >
-                Delete
-              </button>
-            </div>
+                }
+              }}
+              className="px-4 py-2 text-sm rounded-md bg-red-600 text-white hover:bg-red-700"
+            >
+              Delete
+            </button>
           </div>
         </div>
+      </div>
       )}
     </>
   );

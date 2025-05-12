@@ -19,7 +19,7 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({ src, alt }) => {
   }, [src]);
 
   return (
-    <div className="relative w-full h-48 rounded-md overflow-hidden bg-gray-200 mb-4">
+    <div className="relative w-full h-48 rounded-md overflow-hidden bg-gray-200 mb-4 transition-all duration-500">
       {loading && (
         <div className="absolute inset-0 animate-pulse bg-gray-300" />
       )}

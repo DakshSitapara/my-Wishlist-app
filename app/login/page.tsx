@@ -2,30 +2,37 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { login } from '@/app/login/loginUtils';
+// import { login } from '@/app/login/loginUtils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import { EyeClosed, Eye } from 'lucide-react';
+// import { EyeClosed, Eye } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setemail] = useState('');
-  const [password, setpassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  // const [password, setpassword] = useState('');
+  // const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    const success = login(email.trim(), password);
-    console.log(success, "sucess");
-    if (success) {
-      router.push('/wishlist');
-    } else {
-      router.push('/login');
-      }
-  };
+// Login page logic
+const handleLogin = (email: string, password: string) => {
+  const users = JSON.parse(localStorage.getItem('users') || '{}');
+  
+  // Check if user exists and password matches
+  if (!users[email] || users[email].password !== password) {
+    alert('User not found, please sign up');
+    router.push('/signup'); // Redirect to signup page if not found
+    return;
+  }
+
+  // Store logged-in user email in localStorage
+  localStorage.setItem('loggedInUser', email);
+
+  // Redirect to wishlist page
+  router.push('/wishlist');
+};
 
   return (
     <div className="flex flex-col gap-6 min-h-screen items-center justify-center px-4 bg-[url('https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80')] bg-cover bg-center">
@@ -50,7 +57,7 @@ export default function LoginPage() {
               />
             </div>
             
-            <div className="grid gap-2">
+            {/* <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Input
@@ -77,7 +84,7 @@ export default function LoginPage() {
                   )}
                 </Button>
               </div>
-            </div>
+            </div> */}
             
             <Button type="submit" className="w-full">
               Login

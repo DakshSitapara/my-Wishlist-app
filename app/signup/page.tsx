@@ -6,37 +6,42 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { signup } from '@/app/signup/signupUtils';
+// import { signup } from '@/app/signup/signupUtils';
 import Link from 'next/link';
-import { EyeClosed, Eye } from 'lucide-react';
+// import { EyeClosed, Eye } from 'lucide-react';
 
 export default function SignupPage() {
   const [name,setname] = useState('');
   const [email, setemail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-
-  // const [confirmPassword, setConfirmPassword] = useState('');
+  // const [password, setPassword] = useState('');
+  // const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
 
-  const handleSignup = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) {
-      alert('Please enter your name');
-      return;
-    }
-    // if (password !== confirmPassword) {
-    //   alert('Passwords do not match');
-    //   return;
-    // }
+// Sign-up page logic
+const handleSignup = (email: string, password: string) => {
+  // Get the existing users from localStorage
+  const users = JSON.parse(localStorage.getItem('users') || '{}');
   
-    const success = signup(name.trim(), email.trim(), password); // Make sure signup returns boolean
-    if (success) {
-      router.push('/wishlist');
-    }
-    // else, alert is already shown in signup() if email is duplicate
-  };
+  // Check if the user already exists
+  if (users[email]) {
+    alert('User already exists!');
+    return;
+  }
+
+  // Add the new user with an empty wishlist
+  users[email] = { email, password, wishlist: [] };
+  
+  // Save back to localStorage
+  localStorage.setItem('users', JSON.stringify(users));
+
+  // Now log the user in by saving their email to localStorage
+  localStorage.setItem('loggedInUser', email);
+
+  // Redirect to the wishlist page
+  router.push('/wishlist');
+};
+
   
   return (
     <div   className="flex flex-col gap-6 min-h-screen items-center justify-center px-4 bg-[url('https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80')] bg-cover bg-center">
@@ -71,7 +76,7 @@ export default function SignupPage() {
                 required
               />
             </div>
-            <div className="grid gap-2">
+            {/* <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Input
@@ -98,7 +103,7 @@ export default function SignupPage() {
                   )}
                 </Button>
               </div>
-            </div>
+            </div> */}
             {/* <div className="grid gap-2">
                 <Label htmlFor="confirm-password">Confirm password</Label>
                 <Input

@@ -1,22 +1,22 @@
-// signupUtils.ts
-type User = {
-  name: string;
-  email: string;
-  password: string;
-};
+// app/signup/signupUtils.ts
 
-export function signup(name: string, email: string, password: string): boolean {
-  const users = JSON.parse(localStorage.getItem('users') || '[]') as User[];
+export function signup(name: string, email: string): boolean {
+  const users = JSON.parse(localStorage.getItem('users') || '{}');
 
-  const userExists = users.some(u => u.email === email);
-  if (userExists) {
-    alert('Email already registered');
+  if (users[email]) {
+    alert('User already exists!');
     return false;
   }
 
-  const newUser: User = { name, email, password };
-  users.push(newUser);
+  // Create new user with empty wishlist
+  users[email] = {
+    name,
+    email,
+    wishlist: [], // initialize empty wishlist
+  };
+
   localStorage.setItem('users', JSON.stringify(users));
-  localStorage.setItem('currentUser', JSON.stringify(newUser));
+  localStorage.setItem('loggedInUser', email); // store current session
+
   return true;
 }

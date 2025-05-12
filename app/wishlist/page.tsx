@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import Navbar from '../../components/Navbar';
 import { ItemForm } from '../../components/ItemForm';
@@ -13,7 +13,7 @@ import ClientOnly from '@/components/ClientOnly';
 import { toast } from "react-toastify";
 
 export default function WishlistPage() {
-  const [items, setItems] = useState<WishlistItem[]>([]);
+  const [items, setItems] = useLocalStorageState<WishlistItem[]>('wishlist', []);
   const [search, setSearch] = useLocalStorageState<string>('wishlist-search', '');
   const [selectedCategories, setSelectedCategories] = useLocalStorageState<string[]>('wishlist-categories', []);
   const [selectedStatuses, setSelectedStatuses] = useLocalStorageState<string[]>('wishlist-statuses', []);
@@ -22,59 +22,92 @@ export default function WishlistPage() {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [editingItem, setEditingItem] = useState<WishlistItem | null>(null);
 
-  // Load from localStorage on mount
+  // Get the current logged-in user's email from localStorage
+  const email = localStorage.getItem('loggedInUser');
+  
   useEffect(() => {
-    const storedItems = localStorage.getItem('wishlist');
-    if (storedItems) {
-      setItems(JSON.parse(storedItems));
+    // Only run the effect if there's a logged-in user
+    if (email) {
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      const userWishlist = users[email]?.wishlist || []; // Get user's wishlist from localStorage
+      
+      // Set the user's wishlist as the items
+      setItems(userWishlist);
     }
-  }, []);
+  }, [email]); // This will run when the email changes
 
-  // Persist to localStorage when items change
-  useEffect(() => {
-    localStorage.setItem('wishlist', JSON.stringify(items));
-  }, [items]);
-
-  //Add
+  // Add Item
   const handleAddItem = (item: Omit<WishlistItem, 'id'>) => {
     const newItem: WishlistItem = {
       ...item,
       id: uuidv4(),
       isPurchased: false,
     };
-    setItems([...items, newItem]);
+    const updatedItems = [...items, newItem];
+    setItems(updatedItems);
+
+    // Sync with localStorage
+    if (email) {
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      users[email].wishlist = updatedItems; // Update the user's wishlist
+      localStorage.setItem('users', JSON.stringify(users)); // Save back to localStorage
+    }
+
     setIsFormVisible(false);
   };
 
-  //Edit
+  // Edit Item
   const handleEditItem = (item: WishlistItem) => setEditingItem(item);
 
   const handleUpdateItem = (updatedItem: WishlistItem) => {
-    const updated = items.map((item) => item.id === updatedItem.id ? updatedItem : item);
-    setItems(updated);
+    const updatedItems = items.map((item) => item.id === updatedItem.id ? updatedItem : item);
+    setItems(updatedItems);
+    
+    // Sync with localStorage
+    if (email) {
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      users[email].wishlist = updatedItems; // Update the user's wishlist
+      localStorage.setItem('users', JSON.stringify(users)); // Save back to localStorage
+    }
+
     setEditingItem(null);
   };
 
-  //Delete
+  // Delete Item
   const handleDeleteItem = (id: string) => {
-    const updated = items.filter((item) => item.id !== id);
-    setItems(updated);
+    const updatedItems = items.filter((item) => item.id !== id);
+    setItems(updatedItems);
+
+    // Sync with localStorage
+    if (email) {
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      users[email].wishlist = updatedItems; // Update the user's wishlist
+      localStorage.setItem('users', JSON.stringify(users)); // Save back to localStorage
+    }
+
     toast.success("Item deleted successfully!");
   };
 
-  //Toggle purchased
+  // Toggle Purchased Status
   const handleTogglePurchased = (id: string) => {
-    const updated = items.map((item) =>
+    const updatedItems = items.map((item) =>
       item.id === id ? { ...item, isPurchased: !item.isPurchased } : item
     );
-    setItems(updated);
+    setItems(updatedItems);
+
+    // Sync with localStorage
+    if (email) {
+      const users = JSON.parse(localStorage.getItem('users') || '{}');
+      users[email].wishlist = updatedItems; // Update the user's wishlist
+      localStorage.setItem('users', JSON.stringify(users)); // Save back to localStorage
+    }
   };
 
-  //Search
+  // Search
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setSearch(e.target.value);
 
-  //Filter
+  // Filter
   const filteredItems = items.filter((item) => {
     const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
     const matchesCategory =
@@ -94,7 +127,7 @@ export default function WishlistPage() {
       matchesSearch && matchesCategory && matchesStatus && matchesPrice && matchesPriority
     );
   });
-
+  
   return (
     <div className="flex justify-around items-start bg-gray-100 h-screen overflow-auto">
       <aside className="w-64 bg-white shadow-md rounded-md fixed top-20 left-0 h-full z-10">
@@ -163,6 +196,3 @@ export default function WishlistPage() {
     </div>
   );
 }
-
-
-

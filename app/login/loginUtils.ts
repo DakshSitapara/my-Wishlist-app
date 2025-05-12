@@ -1,19 +1,13 @@
-//loginUtils.ts
-type User = {
-  name: string;
-  email: string;
-  password: string;
-};
+// app/login/loginUtils.ts
 
-export function login(email: string, password: string): boolean {
-  const users = JSON.parse(localStorage.getItem('users') || '[]') as User[];
-  const user = users.find(u => u.email === email && u.password === password);
-  if (user) {
-    localStorage.setItem('currentUser', JSON.stringify(user));
+export function login(email: string): boolean {
+  const users = JSON.parse(localStorage.getItem('users') || '{}');
+
+  if (users[email]) {
+    localStorage.setItem('loggedInUser', email); // save active session
     return true;
   }
-  alert('Invalid email or password');
+
+  alert('User not found. Please sign up.');
   return false;
-} 
-
-
+}
