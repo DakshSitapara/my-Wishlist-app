@@ -102,7 +102,7 @@ export default function WishlistPage() {
 
   return (
     <div className="flex justify-around items-start bg-gray-100 h-screen overflow-auto">
-      <aside className="w-64 bg-white shadow-md rounded-md fixed top-20 left-0 h-full z-10">
+    {/* <aside className="w-64 bg-white shadow-md rounded-md fixed top-20 left-0 h-[95vh] z-10 overflow-auto"> */}
         <ClientOnly>
           <SidebarFilter
             selectedCategories={selectedCategories}
@@ -115,7 +115,8 @@ export default function WishlistPage() {
             setSelectedPriorities={setSelectedPriorities}
           />
         </ClientOnly>
-      </aside>
+        {/* </aside> */}
+    
 
       <div className="w-full overflow-auto md:ml-64">
         <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-20">

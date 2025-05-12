@@ -1,11 +1,17 @@
-import React, { useRef } from 'react';
+import React, { useRef , useCallback} from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { 
+  Form, 
+  FormControl, 
+  FormField, 
+  FormItem, 
+  FormLabel, 
+  FormMessage } from "@/components/ui/form";
 import { Card } from "@/components/ui/card";
 import { WishlistItem } from "../types/item-types";
 import { motion } from "framer-motion";
@@ -14,9 +20,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
+  DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import { ChevronDown, } from "lucide-react";
 
 
 // Form validation schema
@@ -75,19 +80,13 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
 
   const dialogRef = useRef<HTMLDivElement>(null);
 
-  const handleClickOutside = (event: React.MouseEvent) => {
+  const handleClickOutside = useCallback((event: React.MouseEvent) => {
     const target = event.target as HTMLElement;
-  
-    // Check if click was inside the dialog
-    if (dialogRef.current && dialogRef.current.contains(target)) return;
-  
-    // Avoid closing if the dropdown is open
-    if (target.closest("[data-dropdown-menu]")) return;
-  
+    if (dialogRef.current?.contains(target)) return;
+    if (target.closest('[role="menu"]')) return;
     onClose();
-  };
+  }, [onClose]);
   
-
   return (
     <div className="fixed inset-0 bg-black/1 backdrop-blur-sm flex items-center justify-center z-50" 
       onClick={handleClickOutside}>
@@ -121,6 +120,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                     <FormLabel className="text-gray-800 font-semibold">Item Name</FormLabel>
                     <FormControl>
                       <Input 
+                        autoFocus
                         placeholder="Enter item name..." 
                         {...field}
                         className="text-black placeholder:text-gray-400 border border-gray-300 focus:border-purple-500 focus:ring-purple-500"
@@ -140,6 +140,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                     <FormLabel className="text-gray-800 font-semibold">Price</FormLabel>
                     <FormControl>
                       <Input 
+                        autoFocus
                         type="number" 
                         step="0" 
                         placeholder="₹ 0" 
@@ -185,6 +186,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                     <FormLabel className="text-gray-800 font-semibold">Item Link</FormLabel>
                     <FormControl>
                       <Input 
+                        autoFocus
                         placeholder="https://..." 
                         {...field}
                         className="text-black placeholder:text-gray-400 border border-gray-300 focus:border-purple-500 focus:ring-purple-500"
@@ -204,6 +206,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                     <FormLabel className="text-gray-800 font-semibold">Item Image URL</FormLabel>
                     <FormControl>
                       <Input 
+                        autoFocus
                         placeholder="Enter image URL..." 
                         {...field}
                         className="text-black placeholder:text-gray-400 border border-gray-300 focus:border-purple-500 focus:ring-purple-500"
@@ -247,7 +250,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                           ].map((category) => (
                             <DropdownMenuItem
                               key={category}
-                              onSelect={() => field.onChange(category)}
+                              onClick={() => field.onChange(category)}
                               className={field.value === category ? "bg-gray-100 text-black font-medium" : ""}
                             >
                               {category}
@@ -283,7 +286,7 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                         {["High", "Medium", "Low"].map((priority) => (
                             <DropdownMenuItem
                               key={priority}
-                              onSelect={() => field.onChange(priority)}
+                              onClick={() => field.onChange(priority)}
                               className={field.value === priority ? "bg-gray-100 text-black font-medium" : ""}
                             >
                               {priority}

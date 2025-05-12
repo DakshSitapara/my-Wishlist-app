@@ -64,17 +64,18 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
   const [isPriorityOpen, setIsPriorityOpen] = React.useState(true);
 
   return (
-    <aside className="w-64 bg-white shadow-md rounded-md p-4 h-full overflow-y-overly border-r border-gray-200">
-    <div className="flex items-center justify-between mb-3">
-      <h2 className="font-semibold text-lg text-gray-800 uppercase">Filters</h2>
-      <button onClick={() =>
-            handleResetFilters(setSelectedCategories, setSelectedStatuses, setPriceRange, setSelectedPriorities)}
+      // <aside className="w-64 bg-white shadow-md rounded-md top-20 p-4 h-[90vh] overflow-auto border-r border-gray-200">
+    <aside className="w-64 bg-white shadow-md rounded-md fixed top-20 p-4 left-0 h-[90vh] z-10 overflow-auto no-scrollbar border-r border-gray-200">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="font-semibold text-lg text-gray-800 uppercase">Filters</h2>
+        <button onClick={() =>
+        handleResetFilters(setSelectedCategories, setSelectedStatuses, setPriceRange, setSelectedPriorities)}
         className="p-2 rounded-full text-gray-600 hover:bg-gray-600 hover:text-white transition duration-300 " 
         title="Reset Filters"
-      >
+        >
         <RotateCcw size={18} />
-      </button>
-    </div>
+        </button>
+      </div>
 
       {/* Categories */}
       <div className="mb-6">
