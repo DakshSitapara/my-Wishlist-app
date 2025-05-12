@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 import Navbar from '../../components/Navbar';
 import { ItemForm } from '../../components/ItemForm';
@@ -10,10 +11,13 @@ import { WishlistItem } from '../../types/item-types';
 import SidebarFilter from '@/components/SidebarFilter';
 import { useLocalStorageState } from '@/app/utils/useLocalStorageState';
 import ClientOnly from '@/components/ClientOnly';
-import { toast } from "react-toastify";
+import { toast } from 'react-toastify';
 
 export default function WishlistPage() {
-  const [items, setItems] = useLocalStorageState<WishlistItem[]>('wishlist', []);
+  const router = useRouter();
+  const username = localStorage.getItem('loggedInUser');
+  const wishlistKey = username ? `wishlist_${username}` : 'wishlist_guest'; 
+  const [items, setItems] = useLocalStorageState<WishlistItem[]>(wishlistKey, []);
   const [search, setSearch] = useLocalStorageState<string>('wishlist-search', '');
   const [selectedCategories, setSelectedCategories] = useLocalStorageState<string[]>('wishlist-categories', []);
   const [selectedStatuses, setSelectedStatuses] = useLocalStorageState<string[]>('wishlist-statuses', []);
@@ -22,19 +26,15 @@ export default function WishlistPage() {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [editingItem, setEditingItem] = useState<WishlistItem | null>(null);
 
-  // Get the current logged-in user's email from localStorage
-  const email = localStorage.getItem('loggedInUser');
-  
   useEffect(() => {
-    // Only run the effect if there's a logged-in user
-    if (email) {
-      const users = JSON.parse(localStorage.getItem('users') || '{}');
-      const userWishlist = users[email]?.wishlist || []; // Get user's wishlist from localStorage
-      
-      // Set the user's wishlist as the items
-      setItems(userWishlist);
+    if (!username) {
+      router.push('/login');
     }
-  }, [email]); // This will run when the email changes
+  }, [username, router]);
+
+  if (!username) {
+    return null;
+  }
 
   // Add Item
   const handleAddItem = (item: Omit<WishlistItem, 'id'>) => {
@@ -45,47 +45,25 @@ export default function WishlistPage() {
     };
     const updatedItems = [...items, newItem];
     setItems(updatedItems);
-
-    // Sync with localStorage
-    if (email) {
-      const users = JSON.parse(localStorage.getItem('users') || '{}');
-      users[email].wishlist = updatedItems; // Update the user's wishlist
-      localStorage.setItem('users', JSON.stringify(users)); // Save back to localStorage
-    }
-
     setIsFormVisible(false);
+    toast.success('Item added successfully!');
   };
 
   // Edit Item
   const handleEditItem = (item: WishlistItem) => setEditingItem(item);
 
   const handleUpdateItem = (updatedItem: WishlistItem) => {
-    const updatedItems = items.map((item) => item.id === updatedItem.id ? updatedItem : item);
+    const updatedItems = items.map((item) => (item.id === updatedItem.id ? updatedItem : item));
     setItems(updatedItems);
-    
-    // Sync with localStorage
-    if (email) {
-      const users = JSON.parse(localStorage.getItem('users') || '{}');
-      users[email].wishlist = updatedItems; // Update the user's wishlist
-      localStorage.setItem('users', JSON.stringify(users)); // Save back to localStorage
-    }
-
     setEditingItem(null);
+    toast.success('Item updated successfully!');
   };
 
   // Delete Item
   const handleDeleteItem = (id: string) => {
     const updatedItems = items.filter((item) => item.id !== id);
     setItems(updatedItems);
-
-    // Sync with localStorage
-    if (email) {
-      const users = JSON.parse(localStorage.getItem('users') || '{}');
-      users[email].wishlist = updatedItems; // Update the user's wishlist
-      localStorage.setItem('users', JSON.stringify(users)); // Save back to localStorage
-    }
-
-    toast.success("Item deleted successfully!");
+    toast.success('Item deleted successfully!');
   };
 
   // Toggle Purchased Status
@@ -94,13 +72,7 @@ export default function WishlistPage() {
       item.id === id ? { ...item, isPurchased: !item.isPurchased } : item
     );
     setItems(updatedItems);
-
-    // Sync with localStorage
-    if (email) {
-      const users = JSON.parse(localStorage.getItem('users') || '{}');
-      users[email].wishlist = updatedItems; // Update the user's wishlist
-      localStorage.setItem('users', JSON.stringify(users)); // Save back to localStorage
-    }
+    toast.success('Purchase status updated!');
   };
 
   // Search
@@ -109,7 +81,7 @@ export default function WishlistPage() {
 
   // Filter
   const filteredItems = items.filter((item) => {
-    const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
+    const matchesItem = item.name.toLowerCase().includes(search.toLowerCase());
     const matchesCategory =
       selectedCategories.length === 0 || selectedCategories.includes(item.category);
     const matchesStatus =
@@ -124,10 +96,10 @@ export default function WishlistPage() {
       selectedPriorities.length === 0 || selectedPriorities.includes(item.priority);
 
     return (
-      matchesSearch && matchesCategory && matchesStatus && matchesPrice && matchesPriority
+      matchesItem && matchesCategory && matchesStatus && matchesPrice && matchesPriority
     );
   });
-  
+
   return (
     <div className="flex justify-around items-start bg-gray-100 h-screen overflow-auto">
       <aside className="w-64 bg-white shadow-md rounded-md fixed top-20 left-0 h-full z-10">

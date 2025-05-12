@@ -17,7 +17,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
-import { toast } from 'react-toastify';
 
 
 // Form validation schema
@@ -68,7 +67,6 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
       
     onAddItem(newItem);
     form.reset();
-    toast.success("Item Added!");
     setIsSubmitting(false);
     onClose();
   };

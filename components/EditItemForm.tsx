@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { WishlistItem } from '../types/item-types';
-import { toast } from 'react-toastify';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -85,7 +84,6 @@ export function EditItemForm({ item, onUpdateItem, onClose }: EditItemFormProps)
     onUpdateItem(updatedItem);
     form.reset();
     onClose();
-    toast.success('Item updated successfully!');
   };
   const dialogRef = useRef<HTMLDivElement>(null);
 

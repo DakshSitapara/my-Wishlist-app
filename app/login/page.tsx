@@ -2,37 +2,43 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-// import { login } from '@/app/login/loginUtils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-// import { EyeClosed, Eye } from 'lucide-react';
+import { useLocalStorageState } from '../utils/useLocalStorageState';
+import { Eye, EyeOff } from 'lucide-react';
 
-export default function LoginPage() {
-  const [email, setemail] = useState('');
-  // const [password, setpassword] = useState('');
-  // const [showPassword, setShowPassword] = useState(false);
+export default function Login() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [users] = useLocalStorageState('users', []); // Removed unused setUsers
   const router = useRouter();
 
-// Login page logic
-const handleLogin = (email: string, password: string) => {
-  const users = JSON.parse(localStorage.getItem('users') || '{}');
-  
-  // Check if user exists and password matches
-  if (!users[email] || users[email].password !== password) {
-    alert('User not found, please sign up');
-    router.push('/signup'); // Redirect to signup page if not found
-    return;
-  }
+  const handleLogin = (event: React.FormEvent) => {
+    event.preventDefault(); // Prevent form reload
 
-  // Store logged-in user email in localStorage
-  localStorage.setItem('loggedInUser', email);
+    // Trim inputs to avoid issues with extra spaces
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
 
-  // Redirect to wishlist page
-  router.push('/wishlist');
-};
+    // Find user with matching credentials
+    const user = users.find(
+      (u: { username: string; password: string }) =>
+        u.username === trimmedUsername && u.password === trimmedPassword
+    );
+
+    if (user) {
+      // Store the logged-in user's username in local storage
+      localStorage.setItem('loggedInUser', trimmedUsername);
+      router.push('/wishlist');
+    } else {
+      alert('User not found or incorrect password, please sign up or try again');
+      router.push('/signup');
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6 min-h-screen items-center justify-center px-4 bg-[url('https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80')] bg-cover bg-center">
@@ -41,23 +47,20 @@ const handleLogin = (email: string, password: string) => {
           <form onSubmit={handleLogin} className="flex flex-col gap-6">
             <div className="flex flex-col items-center text-center">
               <h1 className="text-2xl font-bold">Welcome to Wishlist</h1>
-              <p className="text-muted-foreground">
-                Login to your account
-              </p>
+              <p className="text-muted-foreground">Login to your account</p>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                value={email}
-                onChange={(e) => setemail(e.target.value)}
+                id="username"
+                type="text"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
-            
-            {/* <div className="grid gap-2">
+            <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Input
@@ -65,7 +68,7 @@ const handleLogin = (email: string, password: string) => {
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Enter your password"
                   value={password}
-                  onChange={(e) => setpassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                   className="pr-10"
                 />
@@ -80,27 +83,22 @@ const handleLogin = (email: string, password: string) => {
                   {showPassword ? (
                     <Eye className="h-4 w-4" />
                   ) : (
-                    <EyeClosed className="h-4 w-4" />
+                    <EyeOff className="h-4 w-4" />
                   )}
                 </Button>
               </div>
-            </div> */}
-            
+            </div>
             <Button type="submit" className="w-full">
               Login
             </Button>
           </form>
-          <div className="text-center text-sm text-muted-foreground mt-4 ">
-            Don’t have an account? {' '}
+          <div className="text-center text-sm text-muted-foreground mt-4">
+            Don’t have an account?{' '}
             <Link href="/signup" className="w-h mt-4">
-              <Button className="w-full mt-4">
-                Sign Up
-              </Button>
+              <Button className="w-full mt-4">Sign Up</Button>
             </Link>
             <Link href="/guest" className="w-h mt-4">
-              <Button className="w-full mt-4">
-                Guest account
-              </Button>
+              <Button className="w-full mt-4">Guest account</Button>
             </Link>
           </div>
         </CardContent>
@@ -109,7 +107,6 @@ const handleLogin = (email: string, password: string) => {
         By continuing, you agree to our <a href="#">Terms of Service</a> and{' '}
         <a href="#">Privacy Policy</a>.
       </div>
-
     </div>
   );
 }
