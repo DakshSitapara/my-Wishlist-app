@@ -3,12 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/components/ui/hover-card";
+} from '@/components/ui/hover-card';
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -23,7 +23,6 @@ import {
 import { handleResetFilters } from '@/app/utils/resetFilters';
 
 interface NavbarProps {
-  username?: string;
   onAddItemClick: () => void;
   onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   setSelectedCategories: React.Dispatch<React.SetStateAction<string[]>>;
@@ -32,29 +31,45 @@ interface NavbarProps {
   setSelectedPriorities: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onAddItemClick, onSearchChange,setSelectedCategories,
+const Navbar: React.FC<NavbarProps> = ({
+  onAddItemClick,
+  onSearchChange,
+  setSelectedCategories,
   setSelectedStatuses,
   setPriceRange,
-  setSelectedPriorities }) => {
-  const [username, setUsername] = useState('');
+  setSelectedPriorities,
+}) => {
+  const [username, setUsername] = useState<string>('');
+  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const email = localStorage.getItem('activeUser');
-    if (email) {
-      const name = localStorage.getItem(`username-${email}`);
-      setUsername(name || '');
+    if (typeof window === 'undefined') return;
+    const storedUsername = localStorage.getItem('loggedInUser');
+    console.debug('[Navbar] Loaded username from localStorage:', storedUsername);
+    if (storedUsername) {
+      // Use loggedInUser directly, as username-${username} seems unnecessary
+      setUsername(storedUsername);
     }
+    setIsMounted(true);
   }, []);
 
   const handleLogout = () => {
+    console.debug('[Navbar] Logging out, clearing loggedInUser');
+    localStorage.removeItem('loggedInUser');
     router.push('/login');
   };
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <nav className="p-5">
       <div className="max-w-8x2 mx-auto flex flex-col md:flex-row items-center justify-between gap-4 px-4">
-        <h1 className="text-3xl font-bold text-black">🎁 {username ? `${username}'s Wishlist` : 'My Wishlist'}</h1>
+        <h1 className="text-3xl font-bold text-black">
+          🎁 {username ? `${username}'s Wishlist` : 'My Wishlist'}
+        </h1>
 
         <div className="flex items-center gap-3">
           {/* Search */}
@@ -81,14 +96,18 @@ const Navbar: React.FC<NavbarProps> = ({ onAddItemClick, onSearchChange,setSelec
             <HoverCardTrigger asChild>
               <button className="flex items-center gap-2">
                 <Avatar>
-                <AvatarImage src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" className=" border border-gray-400 rounded-full  " alt="User Avatar" />
-                <AvatarFallback>CN</AvatarFallback>
+                  <AvatarImage
+                    src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png"
+                    className="border border-gray-400 rounded-full"
+                    alt="User Avatar"
+                  />
+                  <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
               </button>
             </HoverCardTrigger>
             <HoverCardContent className="bg-white text-black shadow-lg border border-gray-200 w-52 p-4">
               <div className="flex flex-col items-center gap-2">
-                <h2 className="text-lg font-semibold">{username}</h2>
+                <h2 className="text-lg font-semibold">{username || 'Guest'}</h2>
 
                 {/* AlertDialog inside HoverCardContent */}
                 <AlertDialog>
@@ -100,7 +119,7 @@ const Navbar: React.FC<NavbarProps> = ({ onAddItemClick, onSearchChange,setSelec
                   <AlertDialogContent>
                     <AlertDialogHeader className="text-center">
                       <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                      <AlertDialogDescription className='justify-center text-black  absolute top-3 mt-5 left-22.5'>
+                      <AlertDialogDescription className="justify-center text-black absolute top-3 mt-5 left-22.5">
                         You will be logged out and redirected to the login page.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
@@ -109,11 +128,17 @@ const Navbar: React.FC<NavbarProps> = ({ onAddItemClick, onSearchChange,setSelec
                         Cancel
                       </AlertDialogCancel>
                       <AlertDialogAction
-                      onClick={() => {
-                        handleLogout();
-                        handleResetFilters(setSelectedCategories, setSelectedStatuses, setPriceRange, setSelectedPriorities);
-                      }}
-                        className="bg-red-600 text-white px-4 py-2 rounded-md font-medium shadow-md border border-red-600 hover:bg-white hover:text-red-600 transition-colors duration-300">
+                        onClick={() => {
+                          handleLogout();
+                          handleResetFilters(
+                            setSelectedCategories,
+                            setSelectedStatuses,
+                            setPriceRange,
+                            setSelectedPriorities
+                          );
+                        }}
+                        className="bg-red-600 text-white px-4 py-2 rounded-md font-medium shadow-md border border-red-600 hover:bg-white hover:text-red-600 transition-colors duration-300"
+                      >
                         Confirm Logout
                       </AlertDialogAction>
                     </AlertDialogFooter>

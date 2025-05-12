@@ -6,7 +6,6 @@ export function useLocalStorageState<T>(
   key: string,
   defaultValue: T
 ): readonly [T, React.Dispatch<React.SetStateAction<T>>] {
-  // Initialize state from localStorage or defaultValue
   const [state, setState] = useState<T>(() => {
     if (typeof window === 'undefined') {
       console.debug(`[useLocalStorageState] Server-side render, using defaultValue for key "${key}"`);
@@ -26,7 +25,6 @@ export function useLocalStorageState<T>(
     }
   });
 
-  // Persist state to localStorage when it changes
   useEffect(() => {
     if (typeof window === 'undefined') return;
     try {
@@ -37,7 +35,6 @@ export function useLocalStorageState<T>(
     }
   }, [key, state]);
 
-  // Sync state across tabs
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const handleStorageChange = (e: StorageEvent) => {
