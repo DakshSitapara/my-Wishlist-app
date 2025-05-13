@@ -12,12 +12,13 @@ import SidebarFilter from '@/components/SidebarFilter';
 import { useLocalStorageState } from '@/app/utils/useLocalStorageState';
 import ClientOnly from '@/components/ClientOnly';
 import { toast } from 'react-toastify';
-
+// import { useClientOnlyValue } from '../utils/useClientOnlyValue';
 
 export default function WishlistPage() {
   const router = useRouter();
-  const username = localStorage.getItem('loggedInUser');
-  const wishlistKey = username ? `wishlist_${username}` : 'wishlist_guest'; 
+
+  const username = localStorage.getItem('loggedInUser') ;
+  const wishlistKey = username ? `wishlist_${username}` : 'wishlist_guest';
   const [items, setItems] = useLocalStorageState<WishlistItem[]>(wishlistKey, []);
   const [search, setSearch] = useLocalStorageState<string>('wishlist-search', '');
   const [selectedCategories, setSelectedCategories] = useLocalStorageState<string[]>('wishlist-categories', []);
@@ -116,7 +117,6 @@ export default function WishlistPage() {
             selectedPriorities={selectedPriorities}
             setSelectedPriorities={setSelectedPriorities}
           />
-        </ClientOnly>
         {/* </aside> */}
     
 
@@ -147,7 +147,6 @@ export default function WishlistPage() {
             />
           )}
 
-          <ClientOnly>
             {items.length === 0 ? (
               <div className="text-center text-gray-500 mt-70 text-4xl">
                 <h1>Your wishlist is empty. Start by adding an item!</h1>
@@ -165,9 +164,9 @@ export default function WishlistPage() {
                 onTogglePurchased={handleTogglePurchased}
               />
             )}
-          </ClientOnly>
         </div>
       </div>
+      </ClientOnly>
     </div>
   );
 }
