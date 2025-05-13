@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { handleResetFilters } from '@/app/utils/resetFilters';
 
+
 interface NavbarProps {
   onAddItemClick: () => void;
   onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -101,14 +102,13 @@ const Navbar: React.FC<NavbarProps> = ({
                     className="border border-gray-400 rounded-full"
                     alt="User Avatar"
                   />
-                  <AvatarFallback>CN</AvatarFallback>
+                  <AvatarFallback>U</AvatarFallback>
                 </Avatar>
               </button>
             </HoverCardTrigger>
             <HoverCardContent className="bg-white text-black shadow-lg border border-gray-200 w-52 p-4">
               <div className="flex flex-col items-center gap-2">
                 <h2 className="text-lg font-semibold">{username || 'Guest'}</h2>
-
                 {/* AlertDialog inside HoverCardContent */}
                 <AlertDialog>
                   <AlertDialogTrigger asChild>

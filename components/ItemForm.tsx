@@ -22,7 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import { ChevronDown, } from "lucide-react";
-
+import { cn } from "@/lib/utils";
 
 // Form validation schema
 const itemFormSchema = z.object({
@@ -230,7 +230,10 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
-                            className="w-full justify-between bg-white text-sm text-gray-400 border border-gray-300 shadow"
+                            className={cn(
+                              "w-full justify-between bg-white text-sm border border-gray-300 shadow",
+                              field.value ? "text-black" : "text-gray-400"
+                            )}
                           >
                             {field.value || "Select a category"}
                             <ChevronDown className="ml-2 h-4 w-4" />
@@ -271,14 +274,16 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                   <FormItem>
                     <FormLabel className="text-gray-800 font-semibold">Priority</FormLabel>
                     <FormControl>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                      <DropdownMenu><DropdownMenuTrigger asChild>
                           <Button
-                            className="w-full justify-between bg-white text-sm text-gray-400 border border-gray-300 shadow"
+                            className={cn(
+                              "w-full justify-between bg-white text-sm border border-gray-300 shadow",
+                              field.value ? "text-black" : "text-gray-400"
+                            )}
                           >
                             {field.value || "Select a priority"}
                             <ChevronDown className="ml-2 h-4 w-4" />
-                          </Button>
+                          </Button> 
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-full" data-dropdown-menu>
                         {["High", "Medium", "Low"].map((priority) => (

@@ -65,7 +65,7 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
 
   return (
       // <aside className="w-64 bg-white shadow-md rounded-md top-20 p-4 h-[90vh] overflow-auto border-r border-gray-200">
-    <aside className="w-64 bg-white shadow-md rounded-md fixed top-20 p-4 left-0 h-[90vh] z-10 overflow-auto no-scrollbar border-r border-gray-200">
+    <aside className="w-64 bg-white shadow-md rounded-md fixed top-20 p-4 left-0 h-[90vh] z-10 overflow-auto no-scrollbar border-r border-gray-200 hidden md:block">
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-semibold text-lg text-gray-800 uppercase">Filters</h2>
         <button onClick={() =>

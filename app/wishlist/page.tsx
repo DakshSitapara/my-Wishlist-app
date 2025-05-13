@@ -13,6 +13,7 @@ import { useLocalStorageState } from '@/app/utils/useLocalStorageState';
 import ClientOnly from '@/components/ClientOnly';
 import { toast } from 'react-toastify';
 
+
 export default function WishlistPage() {
   const router = useRouter();
   const username = localStorage.getItem('loggedInUser');
@@ -102,6 +103,7 @@ export default function WishlistPage() {
 
   return (
     <div className="flex justify-around items-start bg-gray-100 h-screen overflow-auto">
+      
     {/* <aside className="w-64 bg-white shadow-md rounded-md fixed top-20 left-0 h-[95vh] z-10 overflow-auto"> */}
         <ClientOnly>
           <SidebarFilter
