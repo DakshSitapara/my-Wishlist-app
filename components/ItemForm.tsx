@@ -100,13 +100,13 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
       <Card 
         ref={dialogRef} 
         className="max-h-[90vh] overflow-y-auto relative p-8 w-full max-w-2xl mx-auto shadow-2xl bg-white rounded-3xl">
-        <Button
+        <button
           onClick={onClose}
           className="absolute top-4 right-6 p-2 text-gray-500 hover:text-white hover:bg-gray-800 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
           aria-label="Close"
         >
           <X className="w-5 h-5" />
-        </Button>
+        </button>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <h2 className="justify-self-center text-2xl font-bold mb-4 text-gray-800">Add New Wishlist Item</h2>
