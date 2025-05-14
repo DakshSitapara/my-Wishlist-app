@@ -9,6 +9,7 @@ const WelcomePage = () => {
 
   return (
     <div   className="flex flex-col gap-6 min-h-screen items-center justify-center px-4 bg-[url('https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80')] bg-cover bg-center text-gray-600">
+
       <motion.h1 
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
