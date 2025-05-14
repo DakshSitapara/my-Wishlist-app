@@ -129,8 +129,10 @@ const Navbar: React.FC<NavbarProps> = ({
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader className="text-center">
-                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                      <AlertDialogDescription className="justify-center text-black absolute top-3 mt-5 left-22.5">
+                      <AlertDialogTitle className="text-black text-center text-lg font-semibold">
+                        Are you sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription className="text-black text-center mt-2">
                         You will be logged out and redirected to the login page.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
