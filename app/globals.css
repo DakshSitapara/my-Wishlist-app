@@ -148,3 +148,8 @@ body {
 .dark body {
   @apply bg-zinc-950 text-white;
 }
+
+/* Add to global CSS or tailwind config */
+body.modal-open {
+  overflow: hidden;
+}

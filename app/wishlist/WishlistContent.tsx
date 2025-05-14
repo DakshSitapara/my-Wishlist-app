@@ -113,6 +113,7 @@ export default function WishlistContent() {
 
   return (
     <div className="flex justify-around items-start bg-gray-100 h-screen overflow-auto">
+    {/* // <div className="flex  flex-col md:flex-row bg-gray-100 min-h-screen overflow-auto"> */}
       <SidebarFilter
         selectedCategories={selectedCategories}
         setSelectedCategories={setSelectedCategories}

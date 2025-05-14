@@ -66,6 +66,7 @@ const Navbar: React.FC<NavbarProps> = ({
   }
 
   return (
+    // <div className='w-full'>
     <nav className="p-5">
       <div className="max-w-8x2 mx-auto flex flex-col md:flex-row items-center justify-between gap-4 px-4">
         <h1 className="text-3xl font-bold text-black">
@@ -74,7 +75,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
         <div className="flex items-center gap-3">
           {/* Search */}
-          <div className="relative">
+          <div className="relative hidden sm:block">
             <Search className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
@@ -85,11 +86,20 @@ const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Add Item */}
-          <button
+          {/* <button
             onClick={onAddItemClick}
             className="border border-gray-400 bg-white text-gray-600 font-semibold px-4 py-2 rounded-lg hover:bg-gray-600 hover:text-white transition duration-300 transform hover:scale-105"
           >
             + Add Item
+          </button> */}
+          <button
+            type="button"
+            aria-label="Add new item"
+            onClick={onAddItemClick}
+            className="border border-gray-400 bg-white text-gray-600 font-semibold px-4 py-2 rounded-lg hover:bg-gray-600 hover:text-white transition duration-300 transform hover:scale-105"
+          >
+            <span className="block md:hidden text-xl font-bold">+</span>
+            <span className="hidden md:inline">+ Add Item</span>
           </button>
 
           {/* Avatar with HoverCard and Logout */}
@@ -101,6 +111,7 @@ const Navbar: React.FC<NavbarProps> = ({
                     src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png"
                     className="border border-gray-400 rounded-full"
                     alt="User Avatar"
+                    title={username}
                   />
                   <AvatarFallback>U</AvatarFallback>
                 </Avatar>
@@ -150,6 +161,7 @@ const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
     </nav>
+    // </div>
   );
 };
 

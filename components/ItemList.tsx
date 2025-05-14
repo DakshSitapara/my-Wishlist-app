@@ -18,8 +18,9 @@ const ItemList: React.FC<ItemListProps> = ({ items, onEdit, onDelete, onTogglePu
   const [itemToDelete, setItemToDelete] = useState<null | string>(null);
 
   return (
-    <>
-      <div className="grid gap-6 mt-6 max-w-6xl mx-auto grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ">
+    <> 
+     {/* <div className="pt-10"> */}
+      <div className=" grid gap-6 mt-6 max-w-6xl mx-auto grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 ">
         {items.map((item) => (
           <div
             key={item.id}
@@ -147,6 +148,7 @@ const ItemList: React.FC<ItemListProps> = ({ items, onEdit, onDelete, onTogglePu
         </div>
       </div>
       )}
+      {/* </div> */}
     </>
   );
 };
