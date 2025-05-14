@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-// import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 import Navbar from '../guest/guestNavbar';
 import { ItemForm } from '../../components/ItemForm';
@@ -10,30 +9,21 @@ import { EditItemForm } from '../../components/EditItemForm';
 import { WishlistItem } from '../../types/item-types';
 import SidebarFilter from '@/components/SidebarFilter';
 import ClientOnly from '@/components/ClientOnly';
+import { useLocalStorageState } from '@/app/utils/useLocalStorageState';
+import { toast } from 'react-toastify';
 
 export default function GuestPage() {
-
-    // const router = useRouter();
-    //   useEffect(() => {
-    //     const user = (localStorage.getItem('activeUser'));
-    //     if (!user) {
-    //       router.push('/login');
-    //     }
-    //   }, [router]);
-
-
-  const [items, setItems] = useState<WishlistItem[]>([]);
-  const [search, setSearch] = useState('');
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState({ min: '', max: '' });
-  const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
+  const [items, setItems] = useLocalStorageState<WishlistItem[]>('wishlist_guest', []);
+  const [search, setSearch] = useLocalStorageState<string>('wishlist-search-guest', '');
+  const [selectedCategories, setSelectedCategories] = useLocalStorageState<string[]>('wishlist-categories-guest', []);
+  const [selectedStatuses, setSelectedStatuses] = useLocalStorageState<string[]>('wishlist-statuses-guest', []);
+  const [priceRange, setPriceRange] = useLocalStorageState<{ min: string; max: string }>('wishlist-price-range-guest', { min: '', max: '' });
+  const [selectedPriorities, setSelectedPriorities] = useLocalStorageState<string[]>('wishlist-priorities-guest', []);
+  const [customCategories, setCustomCategories] = useLocalStorageState<string[]>('wishlist-custom-categories-guest', []);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [editingItem, setEditingItem] = useState<WishlistItem | null>(null);
   const [showAlert, setShowAlert] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-
 
   // Add
   const handleAddItem = (item: Omit<WishlistItem, 'id'>) => {
@@ -42,8 +32,9 @@ export default function GuestPage() {
       id: uuidv4(),
       isPurchased: false,
     };
-    setItems((prev) => [...prev, newItem]);
+    setItems((prev) => [newItem, ...prev]);
     setIsFormVisible(false);
+    toast.success('Item added successfully!');
   };
 
   // Edit
@@ -54,21 +45,43 @@ export default function GuestPage() {
       prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
     );
     setEditingItem(null);
+    toast.success('Item updated successfully!');
   };
 
   // Delete
   const handleDeleteItem = (id: string) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+    const deletedItem = items.find((item) => item.id === id);
+    const updatedItems = items.filter((item) => item.id !== id);
+    setItems(updatedItems);
+    if (deletedItem && customCategories.includes(deletedItem.category)) {
+      const isCategoryUsed = updatedItems.some(
+        (item) => item.category === deletedItem.category
+      );
+      if (!isCategoryUsed) {
+        setCustomCategories(
+          customCategories.filter((cat) => cat !== deletedItem.category)
+        );
+      }
+    }
+    toast.success('Item deleted successfully!');
   };
 
+  // Toggle Purchased
   const handleTogglePurchased = (id: string) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, isPurchased: !item.isPurchased } : item
-      )
+    const updatedItems = items.map((item) =>
+      item.id === id ? { ...item, isPurchased: !item.isPurchased } : item
     );
+    setItems(updatedItems);
+    const toggledItem = updatedItems.find((item) => item.id === id);
+    toast.dismiss();
+    if (toggledItem?.isPurchased) {
+      toast.success('Marked as purchased!', { toastId: 'purchase-status' });
+    } else {
+      toast.info('Marked as not purchased!', { toastId: 'purchase-status' });
+    }
   };
 
+  // Search
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setSearch(e.target.value);
 
@@ -92,12 +105,12 @@ export default function GuestPage() {
   });
 
   return (
-    <div className="flex justify-around items-start bg-gray-100 h-screen overflow-auto">
-
-      {/* Sidebar */}
-      {/* <aside className="w-64 bg-white shadow-md rounded-md fixed top-20 left-0 h-full z-10"> */}
-      <aside className={`w-64 bg-white shadow-md rounded-md fixed top-20 left-0 h-full z-10 transition-transform transform 
-      ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+    <div className="flex flex-col md:flex-row bg-gray-100 min-h-screen overflow-auto">
+      <aside
+        className={`fixed top-20 left-0 h-[90vh] z-30 w-64 bg-white shadow-md rounded-md p-4 overflow-auto no-scrollbar border-r border-gray-200 transform transition-transform duration-300 ease-in-out ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } md:translate-x-0 md:static md:block`}
+      >
         <ClientOnly>
           <SidebarFilter
             selectedCategories={selectedCategories}
@@ -108,91 +121,100 @@ export default function GuestPage() {
             setPriceRange={setPriceRange}
             selectedPriorities={selectedPriorities}
             setSelectedPriorities={setSelectedPriorities}
+            customCategories={customCategories}
           />
         </ClientOnly>
       </aside>
 
-      {/* Main Content */}
-      <div className="flex flex-col w-full ml-64">
-        {/* Navbar */}
-        {/* <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-20">
-        <Navbar
-            onAddItemClick={() => setShowAlert(true)}
-            onSearchChange={handleSearchChange}
-        />
+      <div className="flex-1 overflow-auto md:ml-64">
+        <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-20">
+          <Navbar
+              onAddItemClick={() => setShowAlert(true)}
+              onSearchChange={handleSearchChange}
+            />
+          <div className="p-2 md:hidden">
+            <button
+              className="text-indigo-600 border border-indigo-600 px-3 py-1 rounded hover:bg-indigo-600 hover:text-white transition"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+            >
+              {sidebarOpen ? 'Close Filters' : 'Open Filters'}
+            </button>
+          </div>
+        </div>
 
-        </div> */}
-        {/* Navbar */}
-       <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-20"> 
-  <Navbar
-    onAddItemClick={() => setShowAlert(true)}
-    onSearchChange={handleSearchChange}
-  />
-  
-  {/* Mobile Filter Toggle Button */}
-  <button
-    className="md:hidden text-indigo-600 border border-indigo-600 px-3 py-1 rounded"
-    onClick={() => setSidebarOpen(!sidebarOpen)}
-  >
-    Filters
-  </button>
-</div>
-
-        {/* Content */}
-        <div className="mt-16 h-full overflow-y-auto p-4">
-          {/* Add Form */}
+        <div className="mt-20 p-4">
           {isFormVisible && (
             <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-              <ItemForm onAddItem={handleAddItem} onClose={() => setIsFormVisible(false)} />
+              <ItemForm
+                onAddItem={handleAddItem}
+                onClose={() => setIsFormVisible(false)}
+                customCategories={customCategories}
+                setCustomCategories={setCustomCategories}
+              />
             </div>
           )}
 
-          {/* Edit Form */}
           {editingItem && (
-            <EditItemForm
-              item={editingItem}
-              onUpdateItem={handleUpdateItem}
-              onClose={() => setEditingItem(null)}
-            />
-          )}
-          {showAlert && (
-            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center space-x-4 mt-4 z-50">
-                <div className="bg-white p-6 rounded-md shadow-md text-center">
-                <h2 className="text-xl text-black font-semibold mb-4">Login/Sign Up to Save Your Wishlist</h2>
-                <button
-                    onClick={() => {
-                    setShowAlert(false);
-                    setIsFormVisible(true);
-                    }}
-                    className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-                >
-                    OK
-                </button>
-                <button
-                    onClick={() => {
-                    setShowAlert(false);
-                    setIsFormVisible(false);
-                    }}                    
-                    className="ml-4 bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400">
-                    Cancel
-                    </button>
-                </div>
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+              <EditItemForm
+                item={editingItem}
+                onUpdateItem={handleUpdateItem}
+                onClose={() => setEditingItem(null)}
+                customCategories={customCategories}
+                setCustomCategories={setCustomCategories}
+              />
             </div>
-            )}
+          )}
 
-          {/* Item List */}
-          <ClientOnly>
-            <ItemList
-              items={filteredItems}
-              onEdit={handleEditItem}
-              onDelete={handleDeleteItem}
-              onTogglePurchased={handleTogglePurchased}
-            />
-          </ClientOnly>
-          {/* <div  className="flex flex-col items-center justify-center  space-y-4 text-gray-700">
-            <h1 className="text-4xl font-bold">Welcome to Wishlist</h1>
-            <h2 className="text-lg font-medium">Login/Sign Up to Save Your Wishlist</h2>
-         </div> */}
+          {showAlert && (
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-md shadow-md text-center space-y-4">
+                <h2 className="text-xl text-black font-semibold">
+                  Login/Sign Up to Save Your Wishlist
+                </h2>
+                <div className="flex justify-center space-x-4">
+                  <button
+                    onClick={() => {
+                      setShowAlert(false);
+                      setIsFormVisible(true);
+                    }}
+                    className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition"
+                  >
+                    OK
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowAlert(false);
+                      setIsFormVisible(false);
+                    }}
+                    className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400 transition"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {items.length === 0 ? (
+            <div className="text-center text-gray-500 mt-8 text-2xl">
+              <h1>Your wishlist is empty. Start by adding an item!</h1>
+            </div>
+          ) : filteredItems.length === 0 ? (
+            <div className="text-center text-gray-500 mt-8 text-2xl">
+              <h1>No items match your current search and filters.</h1>
+              <p>Try adjusting the search term or filters.</p>
+            </div>
+          ) : (
+            <ClientOnly>
+              <ItemList
+                items={filteredItems}
+                onEdit={handleEditItem}
+                onDelete={handleDeleteItem}
+                onTogglePurchased={handleTogglePurchased}
+              />
+            </ClientOnly>
+          )}
         </div>
       </div>
     </div>
