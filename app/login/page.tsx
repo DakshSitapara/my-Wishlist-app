@@ -97,9 +97,6 @@ export default function Login() {
             <Link href="/signup" className="w-h mt-4">
               <Button className="w-full mt-4">Sign Up</Button>
             </Link>
-            <Link href="/guest" className="w-h mt-4">
-              <Button className="w-full mt-4">Guest account</Button>
-            </Link>
           </div>
         </CardContent>
       </Card>
