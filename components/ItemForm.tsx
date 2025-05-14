@@ -206,7 +206,6 @@ export function ItemForm({ onAddItem, onClose }: ItemFormProps) {
                     <FormLabel className="text-gray-800 font-semibold">Item Image URL</FormLabel>
                     <FormControl>
                       <Input 
-                        
                         placeholder="Enter image URL..." 
                         {...field}
                         className="text-black placeholder:text-gray-400 border border-gray-300 focus:border-purple-500 focus:ring-purple-500"

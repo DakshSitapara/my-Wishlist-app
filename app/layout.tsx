@@ -28,6 +28,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en"  suppressHydrationWarning>
+      <head><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -38,9 +40,12 @@ export default function RootLayout({
           disableTransitionOnChange
         > 
           {children}
-        </ThemeProvider>
-        
-        <ToastContainer  position="bottom-right"   autoClose={2000} theme="dark"/>
+                  <ToastContainer 
+                    position="bottom-right" 
+                    autoClose={1000} 
+                    theme="dark" 
+                  />
+        </ThemeProvider>        
       </body>
     </html>
   );

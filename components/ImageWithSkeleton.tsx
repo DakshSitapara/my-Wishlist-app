@@ -13,7 +13,6 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({ src, alt }) => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    // Reset states when image URL changes
     setError(false);
     setLoading(true);
   }, [src]);
@@ -28,6 +27,7 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({ src, alt }) => {
         alt={alt}
         width={500}
         height={300}
+        priority
         className={`w-full h-48 object-cover rounded-md transition-opacity duration-500 ${
           loading ? 'opacity-0' : 'opacity-100'
         }`}
@@ -36,7 +36,7 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({ src, alt }) => {
           setError(true);
           setLoading(false);
         }}
-        loading="lazy"
+        // loading="lazy"
       />
     </div>
   );

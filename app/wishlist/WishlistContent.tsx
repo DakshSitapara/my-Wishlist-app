@@ -37,13 +37,15 @@ export default function WishlistContent() {
     return null;
   }
 
+  // Add Item
   const handleAddItem = (item: Omit<WishlistItem, 'id'>) => {
     const newItem: WishlistItem = { ...item, id: uuidv4(), isPurchased: false };
-    setItems([...items, newItem]);
+     setItems([ newItem, ...items ]);
     setIsFormVisible(false);
     toast.success('Item added successfully!');
   };
 
+  // Edit Item
   const handleEditItem = (item: WishlistItem) => setEditingItem(item);
 
   const handleUpdateItem = (updatedItem: WishlistItem) => {
@@ -53,19 +55,43 @@ export default function WishlistContent() {
     toast.success('Item updated successfully!');
   };
 
+  // Delete Item
   const handleDeleteItem = (id: string) => {
     setItems(items.filter((item) => item.id !== id));
     toast.success('Item deleted successfully!');
   };
 
-  const handleTogglePurchased = (id: string) => {
+  // Toggle Purchased Status
+  // const handleTogglePurchased = (id: string) => {
+  //   const updatedItems = items.map((item) =>
+  //     item.id === id ? { ...item, isPurchased: !item.isPurchased } : item
+  //   );
+  //   setItems(updatedItems);
+  //   toast.success('Purchase status updated!');
+  // };
+    const handleTogglePurchased = (id: string) => {
     const updatedItems = items.map((item) =>
       item.id === id ? { ...item, isPurchased: !item.isPurchased } : item
     );
     setItems(updatedItems);
-    toast.success('Purchase status updated!');
+
+    const toggledItem = updatedItems.find(item => item.id === id);
+
+    toast.dismiss(); // Close any previous toast
+
+    if (toggledItem?.isPurchased) {
+      toast.success("Marked as purchased!", {
+        toastId: "purchase-status"
+      });
+    } else {
+      toast.info("Marked as not purchased!", {
+        toastId: "purchase-status"
+      });
+    }
   };
 
+
+  // Search and Filter
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setSearch(e.target.value);
 
