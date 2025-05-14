@@ -59,7 +59,7 @@ const ItemList: React.FC<ItemListProps> = ({ items, onEdit, onDelete, onTogglePu
                     item.category === 'Beauty' ? 'bg-purple-100 text-purple-700' :
                     item.category === 'Sports' ? 'bg-orange-100 text-orange-700' :
                     item.category === 'Toys' ? 'bg-teal-100 text-teal-700' :
-                    'bg-gray-100 text-gray-700'
+                    "rainbow-bg font-medium"                  
                   }`}
                 >
                   {item.category}

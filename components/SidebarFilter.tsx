@@ -16,6 +16,7 @@ interface SidebarFilterProps {
   setPriceRange: React.Dispatch<React.SetStateAction<{ min: string; max: string }>>;
   selectedPriorities: string[];
   setSelectedPriorities: React.Dispatch<React.SetStateAction<string[]>>;
+  customCategories: string[];
 }
 
 const SidebarFilter: React.FC<SidebarFilterProps> = ({
@@ -27,8 +28,18 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
   setPriceRange,
   selectedPriorities,
   setSelectedPriorities,
+  customCategories,
 }) => {
-  const categories = ['Electronics', 'Books', 'Clothing', 'Home', 'Beauty', 'Sports', 'Toys', 'Other'];
+  const categories = [
+    'Electronics',
+    'Books',
+    'Clothing',
+    'Home',
+    'Beauty',
+    'Sports',
+    'Toys',
+    ...customCategories,
+  ];
   const statuses = [
     { id: 'purchased', name: 'Purchased' },
     { id: 'not-purchased', name: 'Not Purchased' },

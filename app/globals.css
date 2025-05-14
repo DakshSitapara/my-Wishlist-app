@@ -154,3 +154,30 @@ body.modal-open {
   overflow: hidden;
 }
 
+
+.rainbow-bg {
+  background: linear-gradient(
+    45deg,
+    #ff6b6b,
+    #4ecdc4,
+    #45b7d1,
+    #96c93d,
+    #f9d423,
+    #ff6b6b
+  );
+  background-size: 200%;
+  animation: rainbow 5s ease infinite;
+  color: #1a202c; /* Dark text for contrast */
+}
+
+@keyframes rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

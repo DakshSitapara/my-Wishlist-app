@@ -24,6 +24,7 @@ export default function WishlistContent() {
   const [selectedStatuses, setSelectedStatuses] = useLocalStorageState<string[]>('wishlist-statuses', []);
   const [priceRange, setPriceRange] = useLocalStorageState<{ min: string; max: string }>('wishlist-price-range', { min: '', max: '' });
   const [selectedPriorities, setSelectedPriorities] = useLocalStorageState<string[]>('wishlist-priorities', []);
+  const [customCategories, setCustomCategories] = useLocalStorageState<string[]>('wishlist-custom-categories', []);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [editingItem, setEditingItem] = useState<WishlistItem | null>(null);
 
@@ -57,7 +58,19 @@ export default function WishlistContent() {
 
   // Delete Item
   const handleDeleteItem = (id: string) => {
-    setItems(items.filter((item) => item.id !== id));
+    const deletedItem = items.find((item) => item.id === id);
+    const updatedItems = items.filter((item) => item.id !== id);
+    setItems(updatedItems);
+    if (deletedItem && customCategories.includes(deletedItem.category)) {
+      const isCategoryUsed = updatedItems.some(
+        (item) => item.category === deletedItem.category
+      );
+      if (!isCategoryUsed) {
+        setCustomCategories(
+          customCategories.filter((cat) => cat !== deletedItem.category)
+        );
+      }
+    }
     toast.success('Item deleted successfully!');
   };
 
@@ -112,20 +125,20 @@ export default function WishlistContent() {
   });
 
   return (
-    <div className="flex justify-around items-start bg-gray-100 h-screen overflow-auto">
-    {/* // <div className="flex  flex-col md:flex-row bg-gray-100 min-h-screen overflow-auto"> */}
-      <SidebarFilter
-        selectedCategories={selectedCategories}
-        setSelectedCategories={setSelectedCategories}
-        selectedStatuses={selectedStatuses}
-        setSelectedStatuses={setSelectedStatuses}
-        priceRange={priceRange}
-        setPriceRange={setPriceRange}
-        selectedPriorities={selectedPriorities}
-        setSelectedPriorities={setSelectedPriorities}
-      />
-      <div className="w-full overflow-auto md:ml-64">
-        <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-20">
+  <div className="flex flex-col md:flex-row bg-gray-100 min-h-screen overflow-auto">
+    <SidebarFilter
+      selectedCategories={selectedCategories}
+      setSelectedCategories={setSelectedCategories}
+      selectedStatuses={selectedStatuses}
+      setSelectedStatuses={setSelectedStatuses}
+      priceRange={priceRange}
+      setPriceRange={setPriceRange}
+      selectedPriorities={selectedPriorities}
+      setSelectedPriorities={setSelectedPriorities}
+      customCategories={customCategories}
+    />
+    <div className="flex-1 overflow-auto md:ml-64">
+      <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-20">
           <Navbar
             onAddItemClick={() => setIsFormVisible(true)}
             onSearchChange={handleSearchChange}
@@ -134,42 +147,49 @@ export default function WishlistContent() {
             setPriceRange={setPriceRange}
             setSelectedPriorities={setSelectedPriorities}
           />
-        </div>
+      </div>
 
-        <div className="mt-16 h-full overflow-y-auto p-4">
-          {isFormVisible && (
-            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-              <ItemForm onAddItem={handleAddItem} onClose={() => setIsFormVisible(false)} />
-            </div>
-          )}
-
-          {editingItem && (
-            <EditItemForm
-              item={editingItem}
-              onUpdateItem={handleUpdateItem}
-              onClose={() => setEditingItem(null)}
+      <div className="mt-16 p-4">
+        {isFormVisible && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+            <ItemForm
+              onAddItem={handleAddItem}
+              onClose={() => setIsFormVisible(false)}
+              customCategories={customCategories}
+              setCustomCategories={setCustomCategories}
             />
-          )}
+          </div>
+        )}
 
-          {items.length === 0 ? (
-            <div className="text-center text-gray-500 mt-70 text-4xl">
-              <h1>Your wishlist is empty. Start by adding an item!</h1>
-            </div>
-          ) : filteredItems.length === 0 ? (
-            <div className="text-center text-gray-500 mt-70 text-4xl">
-              <h1>No items match your current search and filters.</h1>
-              <p>Try adjusting the search term or filters.</p>
-            </div>
-          ) : (
-            <ItemList
-              items={filteredItems}
-              onEdit={handleEditItem}
-              onDelete={handleDeleteItem}
-              onTogglePurchased={handleTogglePurchased}
-            />
-          )}
-        </div>
+        {editingItem && (
+          <EditItemForm
+            item={editingItem}
+            onUpdateItem={handleUpdateItem}
+            onClose={() => setEditingItem(null)}
+            customCategories={customCategories}
+            setCustomCategories={setCustomCategories}
+          />
+        )}
+
+        {items.length === 0 ? (
+          <div className="text-center text-gray-500 mt-8 text-2xl">
+            <h1>Your wishlist is empty. Start by adding an item!</h1>
+          </div>
+        ) : filteredItems.length === 0 ? (
+          <div className="text-center text-gray-500 mt-8 text-2xl">
+            <h1>No items match your current search and filters.</h1>
+            <p>Try adjusting the search term or filters.</p>
+          </div>
+        ) : (
+          <ItemList
+            items={filteredItems}
+            onEdit={handleEditItem}
+            onDelete={handleDeleteItem}
+            onTogglePurchased={handleTogglePurchased}
+          />
+        )}
       </div>
     </div>
-  );
+  </div>
+);
 }
