@@ -18,17 +18,17 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({ src, alt }) => {
   }, [src]);
 
   return (
-    <div className="relative w-full h-48 rounded-md overflow-hidden bg-gray-200 mb-4 transition-all duration-500">
+    <div className="relative w-full aspect-[5/3] rounded-md overflow-hidden bg-gray-200 mb-4 transition-all duration-500">
       {loading && (
         <div className="absolute inset-0 animate-pulse bg-gray-300" />
       )}
       <Image
         src={!error ? src.trim() : '/fallback.jpg'}
         alt={alt}
-        width={500}
-        height={300}
+        fill
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         priority
-        className={`w-full h-48 object-cover rounded-md transition-opacity duration-500 ${
+        className={`rounded-md object-cover transition-opacity duration-500 ${
           loading ? 'opacity-0' : 'opacity-100'
         }`}
         onLoad={() => setLoading(false)}
@@ -36,7 +36,6 @@ const ImageWithSkeleton: React.FC<ImageWithSkeletonProps> = ({ src, alt }) => {
           setError(true);
           setLoading(false);
         }}
-        // loading="lazy"
       />
     </div>
   );

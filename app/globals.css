@@ -182,9 +182,41 @@ body.modal-open {
   }
 }
 
-.bg-primary {
-  @apply bg-white dark:bg-gray-800;
+.rainbow-icon {
+  stroke: url(#rainbow-gradient);
 }
-.text-primary {
-  @apply text-black dark:text-white;
+
+.dark .rainbow-icon-dark {
+  stroke: url(#rainbow-gradient-dark);
+}
+
+/* Define gradients in a global SVG */
+svg.defs {
+  display: none;
+}
+
+.rainbow-text {
+  background: linear-gradient(
+    45deg,
+    #ff6b6b,
+    #4ecdc4,
+    #45b7d1,
+    #96c93d,
+    #f9d423,
+    #ff6b6b
+  );
+  background-size: 200%;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow 5s ease infinite;
+}
+
+
+.dark .rainbow-text-dark {
+  background: linear-gradient(90deg, #ff8787, #66d1c9, #6bc4e0, #a8d164);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 500;
 }

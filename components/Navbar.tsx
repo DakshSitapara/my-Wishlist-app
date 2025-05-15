@@ -85,6 +85,7 @@ const Navbar: React.FC<NavbarProps> = ({
           {/* Add Item */}
           <button
             type="button"
+            title="Add new item"
             aria-label="Add new item"
             onClick={onAddItemClick}
             className="border border-gray-400 bg-white text-gray-600 font-semibold px-4 py-2 rounded-lg hover:bg-gray-600 hover:text-white transition duration-300 transform hover:scale-105"
@@ -102,7 +103,6 @@ const Navbar: React.FC<NavbarProps> = ({
                     src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png"
                     className="border border-gray-400 rounded-full"
                     alt="User Avatar"
-                    title={username}
                   />
                   <AvatarFallback>U</AvatarFallback>
                 </Avatar>

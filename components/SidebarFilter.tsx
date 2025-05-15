@@ -115,7 +115,7 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
           onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
         >
           <h3 className="font-bold text-gray-700">Categories</h3>
-          {isCategoriesOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          {isCategoriesOpen ? <ChevronUp className='hidden' size={18} /> : <ChevronDown className='hidden' size={18} />}
         </div>
         <div
           className={`transition-all duration-500 ease-in-out ${isCategoriesOpen ? 'max-h-screen' : 'max-h-0 overflow-hidden'}`}
@@ -147,7 +147,7 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
           onClick={() => setIsPriceRangeOpen(!isPriceRangeOpen)}
         >
           <h3 className="font-bold text-gray-700">Price Range</h3>
-          {isPriceRangeOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          {isPriceRangeOpen ? <ChevronUp className='hidden' size={18} /> : <ChevronDown className='hidden' size={18} />}
         </div>
         <div
           className={`transition-all duration-500 ease-in-out ${isPriceRangeOpen ? 'max-h-screen' : 'max-h-0 overflow-hidden'}`}
@@ -183,7 +183,7 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
           onClick={() => setIsStatusOpen(!isStatusOpen)}
         >
           <h3 className="font-bold text-gray-700">Status</h3>
-          {isStatusOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          {isStatusOpen ? <ChevronUp className='hidden' size={18} /> : <ChevronDown className='hidden' size={18} />}
         </div>
         <div
           className={`transition-all duration-500 ease-in-out ${isStatusOpen ? 'max-h-screen' : 'max-h-0 overflow-hidden'}`}
@@ -215,7 +215,7 @@ const SidebarFilter: React.FC<SidebarFilterProps> = ({
           onClick={() => setIsPriorityOpen(!isPriorityOpen)}
         >
           <h3 className="font-bold text-gray-700">Priority</h3>
-          {isPriorityOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          {isPriorityOpen ? <ChevronUp className='hidden' size={18} /> : <ChevronDown className='hidden' size={18} />}
         </div>
         <div
           className={`transition-all duration-500 ease-in-out ${isPriorityOpen ? 'max-h-screen' : 'max-h-0 overflow-hidden'}`}
