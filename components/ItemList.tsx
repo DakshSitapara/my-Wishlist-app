@@ -67,7 +67,7 @@ const ItemList: React.FC<ItemListProps> = ({ items, onEdit, onDelete, onTogglePu
                 <button
                   onClick={() => onTogglePurchased(item.id)}
                   title={item.isPurchased ? "Mark as not purchased" : "Mark as purchased"}
-                  className={`text-sm px-4 py-1.5 rounded-full font-medium transition-colors duration-300 ease-in-out shadow-sm ${
+                  className={`text-sm px-4 py-1.5 rounded-full font-medium transition-colors duration-300 ease-in-out shadow-sm hover:scale-110 ${
                     item.isPurchased
                       ? 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900 dark:text-red-300 dark:hover:bg-red-800'
                       : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800'
