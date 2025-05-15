@@ -90,7 +90,7 @@ export default function WishlistContent() {
 
     const toggledItem = updatedItems.find(item => item.id === id);
 
-    toast.dismiss(); // Close any previous toast
+    toast.dismiss(); 
 
     if (toggledItem?.isPurchased) {
       toast.success("Marked as purchased!", {

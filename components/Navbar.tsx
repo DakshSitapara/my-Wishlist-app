@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Search } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Search } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from '@/components/ui/hover-card';
+} from "@/components/ui/hover-card";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -19,9 +19,8 @@ import {
   AlertDialogDescription,
   AlertDialogCancel,
   AlertDialogAction,
-} from '@/components/ui/alert-dialog';
-import { handleResetFilters } from '@/app/utils/resetFilters';
-
+} from "@/components/ui/alert-dialog";
+import { handleResetFilters } from "@/app/utils/resetFilters";
 
 interface NavbarProps {
   onAddItemClick: () => void;
@@ -40,25 +39,24 @@ const Navbar: React.FC<NavbarProps> = ({
   setPriceRange,
   setSelectedPriorities,
 }) => {
-  const [username, setUsername] = useState<string>('');
+  const [username, setUsername] = useState<string>("");
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const storedUsername = localStorage.getItem('loggedInUser');
-    console.debug('[Navbar] Loaded username from localStorage:', storedUsername);
+    if (typeof window === "undefined") return;
+    const storedUsername = localStorage.getItem("loggedInUser");
+    console.debug("[Navbar] Loaded username from localStorage:", storedUsername);
     if (storedUsername) {
-      // Use loggedInUser directly, as username-${username} seems unnecessary
       setUsername(storedUsername);
     }
     setIsMounted(true);
   }, []);
 
   const handleLogout = () => {
-    console.debug('[Navbar] Logging out, clearing loggedInUser');
-    localStorage.removeItem('loggedInUser');
-    router.push('/login');
+    console.debug("[Navbar] Logging out, clearing loggedInUser");
+    localStorage.removeItem("loggedInUser");
+    router.push("/login");
   };
 
   if (!isMounted) {
@@ -66,11 +64,10 @@ const Navbar: React.FC<NavbarProps> = ({
   }
 
   return (
-    // <div className='w-full'>
     <nav className="p-5">
       <div className="max-w-8x2 mx-auto flex flex-col md:flex-row items-center justify-between gap-4 px-4">
         <h1 className="text-3xl font-bold text-black">
-          🎁 {username ? `${username}'s Wishlist` : 'My Wishlist'}
+          🎁 {username ? `${username}'s Wishlist` : "My Wishlist"}
         </h1>
 
         <div className="flex items-center gap-3">
@@ -86,12 +83,6 @@ const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Add Item */}
-          {/* <button
-            onClick={onAddItemClick}
-            className="border border-gray-400 bg-white text-gray-600 font-semibold px-4 py-2 rounded-lg hover:bg-gray-600 hover:text-white transition duration-300 transform hover:scale-105"
-          >
-            + Add Item
-          </button> */}
           <button
             type="button"
             aria-label="Add new item"
@@ -119,8 +110,7 @@ const Navbar: React.FC<NavbarProps> = ({
             </HoverCardTrigger>
             <HoverCardContent className="bg-white text-black shadow-lg border border-gray-200 w-52 p-4">
               <div className="flex flex-col items-center gap-2">
-                <h2 className="text-lg font-semibold">{username || 'Guest'}</h2>
-                {/* AlertDialog inside HoverCardContent */}
+                <h2 className="text-lg font-semibold">{username || "Guest"}</h2>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <button className="mt-2 bg-red-600 text-white px-3 py-1.5 rounded-md font-medium shadow hover:bg-white hover:text-red-600 border border-red-600 transition-colors duration-300">
@@ -163,7 +153,6 @@ const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
     </nav>
-    // </div>
   );
 };
 

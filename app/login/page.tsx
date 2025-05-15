@@ -14,11 +14,11 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [users] = useLocalStorageState('users', []); // Removed unused setUsers
+  const [users] = useLocalStorageState('users', []); 
   const router = useRouter();
 
   const handleLogin = (event: React.FormEvent) => {
-    event.preventDefault(); // Prevent form reload
+    event.preventDefault(); 
 
     // Trim inputs to avoid issues with extra spaces
     const trimmedUsername = username.trim();
