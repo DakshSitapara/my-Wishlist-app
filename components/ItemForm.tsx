@@ -114,7 +114,7 @@ const onSubmit = async (values: ItemFormData) => {
   
   return (
     <div 
-      className="fixed inset-0 bg-black/1 backdrop-blur-sm flex items-center justify-center z-50" 
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50" 
       onClick={handleClickOutside}
     >
       <motion.div

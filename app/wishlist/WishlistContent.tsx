@@ -151,14 +151,12 @@ const handleTogglePurchased = (id: string) => {
 
       <div className="mt-16 p-4">
         {isFormVisible && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
             <ItemForm
               onAddItem={handleAddItem}
               onClose={() => setIsFormVisible(false)}
               customCategories={customCategories}
               setCustomCategories={setCustomCategories}
             />
-          </div>
         )}
 
         {editingItem && (
