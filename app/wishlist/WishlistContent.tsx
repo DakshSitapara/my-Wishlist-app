@@ -10,7 +10,7 @@ import { EditItemForm } from '../../components/EditItemForm';
 import { WishlistItem } from '../../types/item-types';
 import SidebarFilter from '@/components/SidebarFilter';
 import { useLocalStorageState } from '@/app/utils/useLocalStorageState';
-import { toast } from 'react-toastify';
+import toast from 'react-hot-toast';
 
 export default function WishlistContent() {
   const router = useRouter();
@@ -82,26 +82,26 @@ export default function WishlistContent() {
   //   setItems(updatedItems);
   //   toast.success('Purchase status updated!');
   // };
-    const handleTogglePurchased = (id: string) => {
-    const updatedItems = items.map((item) =>
-      item.id === id ? { ...item, isPurchased: !item.isPurchased } : item
-    );
-    setItems(updatedItems);
+const handleTogglePurchased = (id: string) => {
+  const updatedItems = items.map((item) =>
+    item.id === id ? { ...item, isPurchased: !item.isPurchased } : item
+  );
+  setItems(updatedItems);
 
-    const toggledItem = updatedItems.find(item => item.id === id);
+  const toggledItem = updatedItems.find(item => item.id === id);
 
-    toast.dismiss(); 
+  toast.dismiss(); // Clear any existing toasts
 
-    if (toggledItem?.isPurchased) {
-      toast.success("Marked as purchased!", {
-        toastId: "purchase-status"
-      });
-    } else {
-      toast.info("Marked as not purchased!", {
-        toastId: "purchase-status"
-      });
-    }
-  };
+  const message = toggledItem?.isPurchased
+    ? "✅ Marked as purchased!"
+    : "❌ Marked as not purchased!";
+    
+  toast.success(message, {
+    duration: 3000,
+    position: "bottom-right",
+  });
+};
+
 
 
   // Search and Filter
