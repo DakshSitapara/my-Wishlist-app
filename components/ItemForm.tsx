@@ -47,30 +47,41 @@ interface ItemFormProps {
   onAddItem: (item: Omit<WishlistItem, 'id'>) => void;
   onClose: () => void;
   customCategories: string[];
-  setCustomCategories: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export function ItemForm({
   onAddItem,
   onClose,
   customCategories,
-  setCustomCategories,
 }: ItemFormProps) {
   const [showCustomCategoryDialog, setShowCustomCategoryDialog] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const allCategories = [
-    'Electronics',
-    'Books',
-    'Clothing',
-    'Home',
-    'Beauty',
-    'Sports',
-    'Toys',
-    ...customCategories,
-    'Other',
-  ];
+  // Normalize categories to prevent duplicates
+  const normalizeCategory = (category: string): string => {
+    return category.trim().toLowerCase();
+  };
+
+  // Denormalize for display
+  const denormalizeCategory = (category: string): string => {
+    return category.charAt(0).toUpperCase() + category.slice(1);
+  };
+
+  // Deduplicated categories
+  const allCategories = Array.from(
+    new Set([
+      'Electronics',
+      'Books',
+      'Clothing',
+      'Home',
+      'Beauty',
+      'Sports',
+      'Toys',
+      ...customCategories,
+      'Other',
+    ].map(normalizeCategory))
+  ).map(denormalizeCategory);
 
   const form = useForm<ItemFormData>({
     resolver: zodResolver(itemFormSchema),
@@ -85,23 +96,25 @@ export function ItemForm({
     },
   });
 
-const onSubmit = async (values: ItemFormData) => {
-  setIsSubmitting(true);
-  const newItem: Omit<WishlistItem, 'id'> = {
-    name: values.name,
-    description: values.description,
-    link: values.link,
-    price: Number(values.price),
-    imageUrl: values.imageUrl || '',
-    isPurchased: false,
-    category: values.category,
-    priority: values.priority,
+  const onSubmit = async (values: ItemFormData) => {
+    setIsSubmitting(true);
+    const normalizedCategory = normalizeCategory(values.category);
+    const displayCategory = denormalizeCategory(normalizedCategory);
+    const newItem: Omit<WishlistItem, 'id'> = {
+      name: values.name,
+      description: values.description,
+      link: values.link,
+      price: Number(values.price),
+      imageUrl: values.imageUrl || '',
+      isPurchased: false,
+      category: displayCategory,
+      priority: values.priority,
+    };
+    onAddItem(newItem);
+    form.reset();
+    setIsSubmitting(false);
+    onClose();
   };
-  onAddItem(newItem);
-  form.reset();
-  setIsSubmitting(false);
-  onClose();
-};
 
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -111,7 +124,7 @@ const onSubmit = async (values: ItemFormData) => {
     if (target.closest('[role="menu"]')) return;
     onClose();
   }, [onClose]);
-  
+
   return (
     <div 
       className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50" 
@@ -125,7 +138,7 @@ const onSubmit = async (values: ItemFormData) => {
       > 
         <Card 
           ref={dialogRef} 
-          className="max-h-[90vh] overflow-y-auto relative p-8 shadow-2xl bg-white rounded-3xl"
+          className="max-h-[90vh] overflow-y-auto hide-scrollbar relative p-8 shadow-2xl bg-white rounded-3xl"
         >
           <button
             onClick={onClose}
@@ -141,7 +154,6 @@ const onSubmit = async (values: ItemFormData) => {
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Item Name */}
                 <FormField
                   control={form.control}
                   name="name"
@@ -161,7 +173,6 @@ const onSubmit = async (values: ItemFormData) => {
                   )}
                 />
 
-                {/* Price */}
                 <FormField
                   control={form.control}
                   name="price"
@@ -185,7 +196,6 @@ const onSubmit = async (values: ItemFormData) => {
                 />
               </div>
 
-              {/* Description */}
               <FormField
                 control={form.control}
                 name="description"
@@ -205,7 +215,6 @@ const onSubmit = async (values: ItemFormData) => {
               />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Link */}
                 <FormField
                   control={form.control}
                   name="link"
@@ -224,7 +233,6 @@ const onSubmit = async (values: ItemFormData) => {
                   )}
                 />
 
-                {/* Image URL */}
                 <FormField
                   control={form.control}
                   name="imageUrl"
@@ -245,7 +253,6 @@ const onSubmit = async (values: ItemFormData) => {
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {/* Categories Input */}
                 <FormField
                   control={form.control}
                   name="category"
@@ -257,7 +264,7 @@ const onSubmit = async (values: ItemFormData) => {
                           <DropdownMenuTrigger asChild>
                             <Button
                               className={cn(
-                                "w-full justify-between bg-white text-sm border border-gray-300 shadow",
+                                "w-full justify-between bg-white text-sm border border-gray-300 shadow-sm hover:bg-gray-100 hover:text-black transition-colors duration-200",
                                 field.value ? "text-black" : "text-gray-400"
                               )}
                             >
@@ -265,7 +272,7 @@ const onSubmit = async (values: ItemFormData) => {
                               <ChevronDown className="ml-2 h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-full" data-dropdown-menu>
+                          <DropdownMenuContent className="w-full min-w-[200px] bg-white border border-gray-200 shadow-lg rounded-md p-1" data-dropdown-menu>
                             {allCategories.map((category) => (
                               <DropdownMenuItem
                                 key={category}
@@ -276,7 +283,13 @@ const onSubmit = async (values: ItemFormData) => {
                                     field.onChange(category);
                                   }
                                 }}
-                                className={field.value === category ? "bg-gray-100 text-black font-medium" : ""}
+                                className={cn(
+                                  'px-3 py-2 text-sm rounded-sm cursor-pointer transition-colors duration-200',
+                                  field.value === category
+                                    ? 'bg-gray-100 text-black font-medium'
+                                    : 'text-gray-700',
+                                  'hover:bg-gray-200 hover:text-black focus-visible:bg-gray-300 focus-visible:text-black focus-visible:border-l-4 focus-visible:border-purple-500 focus-visible:pl-2'
+                                )}
                               >
                                 {category}
                               </DropdownMenuItem>
@@ -289,7 +302,6 @@ const onSubmit = async (values: ItemFormData) => {
                   )}
                 />
 
-                {/* Priority Input */}
                 <FormField
                   control={form.control}
                   name="priority"
@@ -301,7 +313,7 @@ const onSubmit = async (values: ItemFormData) => {
                           <DropdownMenuTrigger asChild>
                             <Button
                               className={cn(
-                                "w-full justify-between bg-white text-sm border border-gray-300 shadow",
+                                "w-full justify-between bg-white text-sm border border-gray-300 shadow-sm hover:bg-gray-100 hover:text-black transition-colors duration-200",
                                 field.value ? "text-black" : "text-gray-400"
                               )}
                             >
@@ -309,12 +321,18 @@ const onSubmit = async (values: ItemFormData) => {
                               <ChevronDown className="ml-2 h-4 w-4" />
                             </Button> 
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-full"data-dropdown-menu >
+                          <DropdownMenuContent className="w-full min-w-[200px] bg-white border border-gray-200 shadow-lg rounded-md p-1" data-dropdown-menu>
                             {["High", "Medium", "Low"].map((priority) => (
                               <DropdownMenuItem
                                 key={priority}
-                                onClick={() => field.onChange(priority)}
-                                className={field.value === priority ? "bg-gray-100 text-black font-medium" : ""}
+                                onSelect={() => field.onChange(priority)}
+                                className={cn(
+                                  'px-3 py-2 text-sm rounded-sm cursor-pointer transition-colors duration-200',
+                                  field.value === priority
+                                    ? 'bg-gray-100 text-black font-medium'
+                                    : 'text-gray-700',
+                                  'hover:bg-gray-200 hover:text-black focus-visible:bg-gray-300 focus-visible:text-black focus-visible:border-l-4 focus-visible:border-purple-500 focus-visible:pl-2'
+                                )}
                               >
                                 {priority}
                               </DropdownMenuItem>
@@ -328,19 +346,18 @@ const onSubmit = async (values: ItemFormData) => {
                 />
               </div>
 
-              {/* Buttons */}
               <div className="flex justify-end gap-4">
                 <Button 
                   type="button" 
                   onClick={onClose} 
-                  className="border border-gray-300 text-gray-800 bg-white hover:bg-gray-300 hover:text-black rounded-md px-4 py-2 transition-colors hover:scale-105"
+                  className="border border-gray-300 text-gray-800 bg-white hover:bg-gray-300 hover:text-black rounded-md px-4 py-2 transition-colors duration-300 hover:scale-105"
                 >
                   Cancel
                 </Button>
                 <Button 
                   type="submit"
                   disabled={isSubmitting || !form.formState.isValid}
-                  className="bg-black text-white font-semibold px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-black transition duration-300 transform hover:scale-105"
+                  className="bg-black text-white font-semibold px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-black transition-colors duration-300 transform hover:scale-105"
                 >
                   {isSubmitting ? "Adding..." : "Add to Wishlist"}
                 </Button>
@@ -348,43 +365,42 @@ const onSubmit = async (values: ItemFormData) => {
             </form>
           </Form>
 
-          {/* Other Dialog Box */}
           {showCustomCategoryDialog && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-            <div className="bg-white p-6 rounded-xl shadow-lg space-y-4">
-              <h2 className="mb-4  text-center font-semibold text-black text-lg">Add New Category</h2>
-              <Input
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-                placeholder="Enter new category..."
-                className="text-black placeholder:text-gray-400 border border-gray-300 focus:outline-none focus:ring-0 focus:border-gray-500 focus:shadow-md"
-
-              />
-              <div className="flex justify-center-safe gap-2  ">
-                <Button 
-                  type='button'
-                  onClick={() => setShowCustomCategoryDialog(false)}
-                  className="border border-gray-300 text-gray-800 bg-white hover:bg-gray-300 hover:text-black rounded-md px-4 py-2 transition-colors hover:scale-105"
-                >
-                  Cancel
-                </Button>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+              <div className="bg-white p-6 rounded-xl shadow-lg space-y-4">
+                <h2 className="mb-4 text-center font-semibold text-black text-lg">Add New Category</h2>
+                <Input
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  placeholder="Enter new category..."
+                  className="text-black placeholder:text-gray-400 border border-gray-300 focus:outline-none focus:ring-0 focus:border-gray-500 focus:shadow-md"
+                />
+                <div className="flex justify-center-safe gap-2">
+                  <Button 
+                    type="button"
+                    onClick={() => setShowCustomCategoryDialog(false)}
+                    className="border border-gray-300 text-gray-800 bg-white hover:bg-gray-300 hover:text-black rounded-md px-4 py-2 transition-colors duration-300 hover:scale-105"
+                  >
+                    Cancel
+                  </Button>
                   <Button
                     onClick={() => {
-                      if (newCategoryName.trim() && !allCategories.includes(newCategoryName)) {
-                        setCustomCategories([...customCategories, newCategoryName]);
-                        form.setValue('category', newCategoryName);
+                      const normalizedCategory = normalizeCategory(newCategoryName);
+                      const displayCategory = denormalizeCategory(normalizedCategory);
+                      if (newCategoryName.trim() && !allCategories.includes(displayCategory)) {
+                        form.setValue('category', displayCategory);
                         setNewCategoryName('');
                         setShowCustomCategoryDialog(false);
                       }
                     }}
-                    className="bg-black text-white font-semibold px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-black transition duration-300 transform hover:scale-105"
+                    className="bg-black text-white font-semibold px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-black transition-colors duration-300 transform hover:scale-105"
                   >
                     Add
                   </Button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
         </Card>
       </motion.div>
     </div>

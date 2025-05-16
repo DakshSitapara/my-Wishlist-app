@@ -12,6 +12,19 @@ import SidebarFilter from '@/components/SidebarFilter';
 import { useLocalStorageState } from '@/app/utils/useLocalStorageState';
 import toast from 'react-hot-toast';
 
+// Predefined categories for ItemForm/EditItemForm dropdowns
+const PREDEFINED_CATEGORIES = ['Electronics', 'Books', 'Clothing', 'Home', 'Beauty', 'Sports', 'Toys', 'Other'];
+
+// Normalize category names to prevent duplicates
+const normalizeCategory = (category: string): string => {
+  return category.trim().toLowerCase();
+};
+
+// Denormalize for display
+const denormalizeCategory = (category: string): string => {
+  return category.charAt(0).toUpperCase() + category.slice(1);
+};
+
 export default function WishlistContent() {
   const router = useRouter();
 
@@ -28,6 +41,11 @@ export default function WishlistContent() {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [editingItem, setEditingItem] = useState<WishlistItem | null>(null);
 
+  // Deduplicated categories for ItemForm and EditItemForm
+  const availableCategories = Array.from(
+    new Set([...PREDEFINED_CATEGORIES, ...customCategories].map(normalizeCategory))
+  ).map(denormalizeCategory);
+
   useEffect(() => {
     if (!username) {
       router.push('/login');
@@ -40,8 +58,14 @@ export default function WishlistContent() {
 
   // Add Item
   const handleAddItem = (item: Omit<WishlistItem, 'id'>) => {
-    const newItem: WishlistItem = { ...item, id: uuidv4(), isPurchased: false };
-     setItems([ newItem, ...items ]);
+    const normalizedCategory = normalizeCategory(item.category);
+    const displayCategory = denormalizeCategory(normalizedCategory);
+    const newItem: WishlistItem = { ...item, id: uuidv4(), isPurchased: false, category: displayCategory };
+    setItems([newItem, ...items]);
+    // Add category to customCategories if not already present
+    if (!customCategories.map(normalizeCategory).includes(normalizedCategory)) {
+      setCustomCategories([...customCategories, displayCategory]);
+    }
     setIsFormVisible(false);
     toast.success('Item added successfully!');
   };
@@ -50,8 +74,27 @@ export default function WishlistContent() {
   const handleEditItem = (item: WishlistItem) => setEditingItem(item);
 
   const handleUpdateItem = (updatedItem: WishlistItem) => {
-    const updatedItems = items.map((item) => (item.id === updatedItem.id ? updatedItem : item));
+    const normalizedCategory = normalizeCategory(updatedItem.category);
+    const displayCategory = denormalizeCategory(normalizedCategory);
+    const updatedItemWithCategory: WishlistItem = { ...updatedItem, category: displayCategory };
+    const updatedItems = items.map((item) => (item.id === updatedItem.id ? updatedItemWithCategory : item));
     setItems(updatedItems);
+    // Add new category to customCategories if not already present
+    if (!customCategories.map(normalizeCategory).includes(normalizedCategory)) {
+      setCustomCategories([...customCategories, displayCategory]);
+    }
+    // Remove old category if no items remain in it
+    const oldItem = items.find((item) => item.id === updatedItem.id);
+    if (oldItem && normalizeCategory(oldItem.category) !== normalizedCategory) {
+      const isOldCategoryUsed = updatedItems.some(
+        (item) => normalizeCategory(item.category) === normalizeCategory(oldItem.category)
+      );
+      if (!isOldCategoryUsed) {
+        setCustomCategories(
+          customCategories.filter((cat) => normalizeCategory(cat) !== normalizeCategory(oldItem.category))
+        );
+      }
+    }
     setEditingItem(null);
     toast.success('Item updated successfully!');
   };
@@ -61,13 +104,13 @@ export default function WishlistContent() {
     const deletedItem = items.find((item) => item.id === id);
     const updatedItems = items.filter((item) => item.id !== id);
     setItems(updatedItems);
-    if (deletedItem && customCategories.includes(deletedItem.category)) {
+    if (deletedItem) {
       const isCategoryUsed = updatedItems.some(
-        (item) => item.category === deletedItem.category
+        (item) => normalizeCategory(item.category) === normalizeCategory(deletedItem.category)
       );
       if (!isCategoryUsed) {
         setCustomCategories(
-          customCategories.filter((cat) => cat !== deletedItem.category)
+          customCategories.filter((cat) => normalizeCategory(cat) !== normalizeCategory(deletedItem.category))
         );
       }
     }
@@ -75,34 +118,23 @@ export default function WishlistContent() {
   };
 
   // Toggle Purchased Status
-  // const handleTogglePurchased = (id: string) => {
-  //   const updatedItems = items.map((item) =>
-  //     item.id === id ? { ...item, isPurchased: !item.isPurchased } : item
-  //   );
-  //   setItems(updatedItems);
-  //   toast.success('Purchase status updated!');
-  // };
-const handleTogglePurchased = (id: string) => {
-  const updatedItems = items.map((item) =>
-    item.id === id ? { ...item, isPurchased: !item.isPurchased } : item
-  );
-  setItems(updatedItems);
+  const handleTogglePurchased = (id: string) => {
+    const updatedItems = items.map((item) =>
+      item.id === id ? { ...item, isPurchased: !item.isPurchased } : item
+    );
+    setItems(updatedItems);
 
-  const toggledItem = updatedItems.find(item => item.id === id);
+    const toggledItem = updatedItems.find((item) => item.id === id);
 
-  toast.dismiss(); // Clear any existing toasts
-
-  const message = toggledItem?.isPurchased
-    ? "✅ Marked as purchased!"
-    : "❌ Marked as not purchased!";
-    
-  toast.success(message, {
-    duration: 3000,
-    position: "bottom-right",
-  });
-};
-
-
+    toast.dismiss();
+    const message = toggledItem?.isPurchased
+      ? "✅ Marked as purchased!"
+      : "❌ Marked as not purchased!";
+    toast.success(message, {
+      duration: 3000,
+      position: "bottom-right",
+    });
+  };
 
   // Search and Filter
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -125,20 +157,20 @@ const handleTogglePurchased = (id: string) => {
   });
 
   return (
-  <div className="flex flex-col md:flex-row bg-gray-100 min-h-screen overflow-auto">
-    <SidebarFilter
-      selectedCategories={selectedCategories}
-      setSelectedCategories={setSelectedCategories}
-      selectedStatuses={selectedStatuses}
-      setSelectedStatuses={setSelectedStatuses}
-      priceRange={priceRange}
-      setPriceRange={setPriceRange}
-      selectedPriorities={selectedPriorities}
-      setSelectedPriorities={setSelectedPriorities}
-      customCategories={customCategories}
-    />
-    <div className="flex-1 overflow-auto md:ml-64">
-      <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-20">
+    <div className="flex flex-col md:flex-row bg-gray-100 min-h-screen overflow-auto">
+      <SidebarFilter
+        selectedCategories={selectedCategories}
+        setSelectedCategories={setSelectedCategories}
+        selectedStatuses={selectedStatuses}
+        setSelectedStatuses={setSelectedStatuses}
+        priceRange={priceRange}
+        setPriceRange={setPriceRange}
+        selectedPriorities={selectedPriorities}
+        setSelectedPriorities={setSelectedPriorities}
+        customCategories={customCategories}
+      />
+      <div className="flex-1 overflow-auto md:ml-64">
+        <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-20">
           <Navbar
             onAddItemClick={() => setIsFormVisible(true)}
             onSearchChange={handleSearchChange}
@@ -147,47 +179,49 @@ const handleTogglePurchased = (id: string) => {
             setPriceRange={setPriceRange}
             setSelectedPriorities={setSelectedPriorities}
           />
-      </div>
+        </div>
 
-      <div className="mt-16 p-4">
-        {isFormVisible && (
-            <ItemForm
-              onAddItem={handleAddItem}
-              onClose={() => setIsFormVisible(false)}
-              customCategories={customCategories}
-              setCustomCategories={setCustomCategories}
+        <div className="mt-16 p-4">
+          {isFormVisible && (
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+              <ItemForm
+                onAddItem={handleAddItem}
+                onClose={() => setIsFormVisible(false)}
+                customCategories={availableCategories}
+              />
+            </div>
+          )}
+
+          {editingItem && (
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+              <EditItemForm
+                item={editingItem}
+                onUpdateItem={handleUpdateItem}
+                onClose={() => setEditingItem(null)}
+                customCategories={availableCategories}
+              />
+            </div>
+          )}
+
+          {items.length === 0 ? (
+            <div className="text-center text-gray-500 mt-8 text-2xl">
+              <h1>Your wishlist is empty. Start by adding an item!</h1>
+            </div>
+          ) : filteredItems.length === 0 ? (
+            <div className="text-center text-gray-500 mt-8 text-2xl">
+              <h1>No items match your current search and filters.</h1>
+              <p>Try adjusting the search term or filters.</p>
+            </div>
+          ) : (
+            <ItemList
+              items={filteredItems}
+              onEdit={handleEditItem}
+              onDelete={handleDeleteItem}
+              onTogglePurchased={handleTogglePurchased}
             />
-        )}
-
-        {editingItem && (
-          <EditItemForm
-            item={editingItem}
-            onUpdateItem={handleUpdateItem}
-            onClose={() => setEditingItem(null)}
-            customCategories={customCategories}
-            setCustomCategories={setCustomCategories}
-          />
-        )}
-
-        {items.length === 0 ? (
-          <div className="text-center text-gray-500 mt-8 text-2xl">
-            <h1>Your wishlist is empty. Start by adding an item!</h1>
-          </div>
-        ) : filteredItems.length === 0 ? (
-          <div className="text-center text-gray-500 mt-8 text-2xl">
-            <h1>No items match your current search and filters.</h1>
-            <p>Try adjusting the search term or filters.</p>
-          </div>
-        ) : (
-          <ItemList
-            items={filteredItems}
-            onEdit={handleEditItem}
-            onDelete={handleDeleteItem}
-            onTogglePurchased={handleTogglePurchased}
-          />
-        )}
+          )}
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 }

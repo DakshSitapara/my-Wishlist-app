@@ -130,17 +130,6 @@ input[type="button"],
   cursor: pointer;
 }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none; /* IE/Edge */
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
-
 body {
   @apply bg-white text-black transition-colors duration-300;
 }
@@ -153,7 +142,6 @@ body {
 body.modal-open {
   overflow: hidden;
 }
-
 
 .rainbow-bg {
   background: linear-gradient(
@@ -212,7 +200,6 @@ svg.defs {
   animation: rainbow 5s ease infinite;
 }
 
-
 .dark .rainbow-text-dark {
   background: linear-gradient(90deg, #ff8787, #66d1c9, #6bc4e0, #a8d164);
   -webkit-background-clip: text;
@@ -227,4 +214,9 @@ input[type="number"]::-webkit-outer-spin-button {
   margin: 0;
 }
 
-
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}

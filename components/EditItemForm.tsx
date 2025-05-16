@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useRef, useState, useCallback } from 'react';
@@ -25,7 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 // Form validation schema
@@ -50,7 +49,6 @@ interface EditItemFormProps {
   onUpdateItem: (updatedItem: WishlistItem) => void;
   onClose: () => void;
   customCategories: string[];
-  setCustomCategories: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export function EditItemForm({
@@ -58,24 +56,36 @@ export function EditItemForm({
   onUpdateItem,
   onClose,
   customCategories,
-  setCustomCategories,
 }: EditItemFormProps) {
   const [showCustomCategoryDialog, setShowCustomCategoryDialog] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-  const allCategories = [
-    'Electronics',
-    'Books',
-    'Clothing',
-    'Home',
-    'Beauty',
-    'Sports',
-    'Toys',
-    ...customCategories,
-    'Other',
-  ];
+  // Normalize categories to prevent duplicates
+  const normalizeCategory = (category: string): string => {
+    return category.trim().toLowerCase();
+  };
 
+  // Denormalize for display
+  const denormalizeCategory = (category: string): string => {
+    return category.charAt(0).toUpperCase() + category.slice(1);
+  };
+
+  // Deduplicated categories
+  const allCategories = Array.from(
+    new Set([
+      'Electronics',
+      'Books',
+      'Clothing',
+      'Home',
+      'Beauty',
+      'Sports',
+      'Toys',
+      ...customCategories,
+      'Other',
+    ].map(normalizeCategory))
+  ).map(denormalizeCategory);
 
   const form = useForm<EditItemFormData>({
     resolver: zodResolver(editItemFormSchema),
@@ -92,22 +102,49 @@ export function EditItemForm({
 
   const onSubmit = async (values: EditItemFormData) => {
     setIsSubmitting(true);
-    const updatedItem: WishlistItem = {
-      id: item.id,
-      name: values.name,
-      description: values.description,
-      link: values.link,
-      price: Number(values.price),
-      imageUrl: values.imageUrl || '',
-      isPurchased: item.isPurchased,
-      category: values.category,
-      priority: values.priority,
-    };
+    try {
+      const normalizedCategory = normalizeCategory(values.category);
+      const displayCategory = denormalizeCategory(normalizedCategory);
+      const updatedItem: WishlistItem = {
+        id: item.id,
+        name: values.name,
+        description: values.description,
+        link: values.link,
+        price: Number(values.price),
+        imageUrl: values.imageUrl || '',
+        isPurchased: item.isPurchased,
+        category: displayCategory,
+        priority: values.priority,
+      };
 
-    onUpdateItem(updatedItem);
+      // Perform the update
+      await onUpdateItem(updatedItem);
+
+      // Show success toast
+      setToast({ message: 'Item updated successfully', type: 'success' });
+
+      // Close form after 2 seconds
+      setTimeout(() => {
+        setToast(null);
+        setIsSubmitting(false);
+        onClose();
+      }, 2000);
+    }catch (error: unknown) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'Please try again.';
+     // Show error toast with error message
+    setToast({ 
+      message: `Failed to update item: ${message}`, 
+      type: 'error' 
+    });
     setIsSubmitting(false);
-    onClose();
-  };
+    setTimeout(() => {
+      setToast(null);
+    }, 3000);
+  }
+};
 
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -122,7 +159,7 @@ export function EditItemForm({
   );
 
   return (
-    <div
+    < div
       className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
       onClick={handleClickOutside}
     >
@@ -134,7 +171,7 @@ export function EditItemForm({
       >
         <Card
           ref={dialogRef}
-          className="max-h-[90vh] overflow-y-auto relative p-8 shadow-2xl bg-white rounded-3xl"
+          className="max-h-[90vh] overflow-y-auto hide-scrollbar relative p-8 shadow-2xl bg-white rounded-3xl"
         >
           <button
             onClick={onClose}
@@ -206,7 +243,7 @@ export function EditItemForm({
                       />
                     </FormControl>
                     <FormMessage />
-                  </FormItem>
+                    </FormItem>
                 )}
               />
 
@@ -260,7 +297,7 @@ export function EditItemForm({
                           <DropdownMenuTrigger asChild>
                             <Button
                               className={cn(
-                                'w-full justify-between bg-white text-sm border border-gray-300 shadow',
+                                'w-full justify-between bg-white text-sm border border-gray-300 shadow-sm hover:bg-gray-100 hover:text-black transition-colors duration-200',
                                 field.value ? 'text-black' : 'text-gray-400'
                               )}
                             >
@@ -268,7 +305,7 @@ export function EditItemForm({
                               <ChevronDown className="ml-2 h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-full" data-dropdown-menu>
+                          <DropdownMenuContent className="w-full min-w-[200px] bg-white border border-gray-200 shadow-lg rounded-md p-1" data-dropdown-menu>
                             {allCategories.map((category) => (
                               <DropdownMenuItem
                                 key={category}
@@ -280,7 +317,12 @@ export function EditItemForm({
                                   }
                                 }}
                                 className={cn(
-                                  field.value === category? 'bg-gray-100 text-black font-medium': '' )}
+                                  'px-3 py-2 text-sm rounded-sm cursor-pointer transition-colors duration-200',
+                                  field.value === category
+                                    ? 'bg-gray-100 text-black font-medium'
+                                    : 'text-gray-700',
+                                  'hover:bg-gray-200 hover:text-black focus-visible:bg-gray-300 focus-visible:text-black focus-visible:border-l-4 focus-visible:border-purple-500 focus-visible:pl-2'
+                                )}
                               >
                                 {category}
                               </DropdownMenuItem>
@@ -304,7 +346,7 @@ export function EditItemForm({
                           <DropdownMenuTrigger asChild>
                             <Button
                               className={cn(
-                                'w-full justify-between bg-white text-sm border border-gray-300 shadow',
+                                'w-full justify-between bg-white text-sm border border-gray-300 shadow-sm hover:bg-gray-100 hover:text-black transition-colors duration-200',
                                 field.value ? 'text-black' : 'text-gray-400'
                               )}
                             >
@@ -312,12 +354,18 @@ export function EditItemForm({
                               <ChevronDown className="ml-2 h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-full" data-dropdown-menu>
+                          <DropdownMenuContent className="w-full min-w-[200px] bg-white border border-gray-200 shadow-lg rounded-md p-1" data-dropdown-menu>
                             {['High', 'Medium', 'Low'].map((priority) => (
                               <DropdownMenuItem
                                 key={priority}
                                 onSelect={() => field.onChange(priority)}
-                                className={cn(field.value === priority ? 'bg-gray-100 text-black font-medium' : '')}
+                                className={cn(
+                                  'px-3 py-2 text-sm rounded-sm cursor-pointer transition-colors duration-200',
+                                  field.value === priority
+                                    ? 'bg-gray-100 text-black font-medium'
+                                    : 'text-gray-700',
+                                  'hover:bg-gray-200 hover:text-black focus-visible:bg-gray-300 focus-visible:text-black focus-visible:border-l-4 focus-visible:border-purple-500 focus-visible:pl-2'
+                                )}
                               >
                                 {priority}
                               </DropdownMenuItem>
@@ -335,58 +383,76 @@ export function EditItemForm({
                 <Button
                   type="button"
                   onClick={onClose}
-                  className="border border-gray-300 text-gray-800 bg-white hover:bg-gray-300 hover:text-black rounded-md px-4 py-2 transition-colors hover:scale-105"
+                  className="border border-gray-300 text-gray-800 bg-white hover:bg-gray-300 hover:text-black rounded-md px-4 py-2 transition-colors duration-300 hover:scale-105"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={isSubmitting || !form.formState.isValid}
-                  className="bg-black text-white font-semibold px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-black transition duration-300 transform hover:scale-105"
+                  className="bg-black text-white font-semibold px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-black transition-colors duration-300 transform hover:scale-105"
                 >
                   {isSubmitting ? 'Updating...' : 'Update Item'}
                 </Button>
               </div>
             </form>
           </Form>
-          
-                    {showCustomCategoryDialog && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-                      <div className="bg-white p-6 rounded-xl shadow-lg space-y-4">
-                        <h2 className="mb-4  text-center font-semibold text-black text-lg">Add New Category</h2>
-                        <Input
-                          value={newCategoryName}
-                          onChange={(e) => setNewCategoryName(e.target.value)}
-                          placeholder="Enter new category..."
-                          className="text-black placeholder:text-gray-400 border border-gray-300 focus:outline-none focus:ring-0 focus:border-gray-500 focus:shadow-md"
-          
-                        />
-                        <div className="flex justify-center-safe gap-2  ">
-                          <Button 
-                            type='button'
-                            onClick={() => setShowCustomCategoryDialog(false)}
-                            className="border border-gray-300 text-gray-800 bg-white hover:bg-gray-300 hover:text-black rounded-md px-4 py-2 transition-colors hover:scale-105"
-                          >
-                            Cancel
-                          </Button>
-                            <Button
-                              onClick={() => {
-                                if (newCategoryName.trim() && !allCategories.includes(newCategoryName)) {
-                                  setCustomCategories([...customCategories, newCategoryName]);
-                                  form.setValue('category', newCategoryName);
-                                  setNewCategoryName('');
-                                  setShowCustomCategoryDialog(false);
-                                }
-                              }}
-                              className="bg-black text-white font-semibold px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-black transition duration-300 transform hover:scale-105"
-                            >
-                              Add
-                            </Button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-        </Card>      </motion.div>
+
+          {showCustomCategoryDialog && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+              <div className="bg-white p-6 rounded-xl shadow-lg space-y-4">
+                <h2 className="mb-4 text-center font-semibold text-black text-lg">Add New Category</h2>
+                <Input
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  placeholder="Enter new category..."
+                  className="text-black placeholder:text-gray-400 border border-gray-300 focus:outline-none focus:ring-0 focus:border-gray-500 focus:shadow-md"
+                />
+                <div className="flex justify-center-safe gap-2">
+                  <Button
+                    type="button"
+                    onClick={() => setShowCustomCategoryDialog(false)}
+                    className="border border-gray-300 text-gray-800 bg-white hover:bg-gray-300 hover:text-black rounded-md px-4 py-2 transition-colors duration-300 hover:scale-105"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      const normalizedCategory = normalizeCategory(newCategoryName);
+                      const displayCategory = denormalizeCategory(normalizedCategory);
+                      if (newCategoryName.trim() && !allCategories.includes(displayCategory)) {
+                        form.setValue('category', displayCategory);
+                        setNewCategoryName('');
+                        setShowCustomCategoryDialog(false);
+                      }
+                    }}
+                    className="bg-black text-white font-semibold px-4 py-2 rounded-lg hover:bg-gray-300 hover:text-black transition-colors duration-300 transform hover:scale-105"
+                  >
+                    Add
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <AnimatePresence>
+            {toast && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.3 }}
+                className={cn(
+                  'fixed bottom-4 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg text-white font-semibold',
+                  toast.type === 'success' ? 'bg-purple-500' : 'bg-red-500'
+                )}
+              >
+                {toast.message}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Card>
+      </motion.div>
     </div>
   );
 }
