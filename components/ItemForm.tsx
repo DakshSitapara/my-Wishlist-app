@@ -114,7 +114,7 @@ const onSubmit = async (values: ItemFormData) => {
   
   return (
     <div 
-      className="fixed inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center z-50" 
+      className="fixed inset-0 bg-black/1 backdrop-blur-sm flex items-center justify-center z-50" 
       onClick={handleClickOutside}
     >
       <motion.div
@@ -171,7 +171,6 @@ const onSubmit = async (values: ItemFormData) => {
                       <FormControl>
                         <Input 
                           type="number" 
-                          step="0.01" 
                           placeholder="₹ 0" 
                           {...field}
                           onChange={(e) => field.onChange(parseFloat(e.target.value))}
