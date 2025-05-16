@@ -140,7 +140,11 @@ body {
 
 /* Add to global CSS or tailwind config */
 body.modal-open {
-  overflow: hidden;
+  overflow: hidden !important;
+}
+
+.modal-active {
+  overflow: hidden !important;
 }
 
 .rainbow-bg {

@@ -11,6 +11,7 @@ import { WishlistItem } from '../../types/item-types';
 import SidebarFilter from '@/components/SidebarFilter';
 import { useLocalStorageState } from '@/app/utils/useLocalStorageState';
 import toast from 'react-hot-toast';
+import { cn } from '@/lib/utils';
 
 // Predefined categories for ItemForm/EditItemForm dropdowns
 const PREDEFINED_CATEGORIES = ['Electronics', 'Books', 'Clothing', 'Home', 'Beauty', 'Sports', 'Toys', 'Other'];
@@ -157,7 +158,7 @@ export default function WishlistContent() {
   });
 
   return (
-    <div className="flex flex-col md:flex-row bg-gray-100 min-h-screen overflow-auto">
+    <div className="flex flex-col md:flex-row bg-gray-100 min-h-screen">
       <SidebarFilter
         selectedCategories={selectedCategories}
         setSelectedCategories={setSelectedCategories}
@@ -169,7 +170,12 @@ export default function WishlistContent() {
         setSelectedPriorities={setSelectedPriorities}
         customCategories={customCategories}
       />
-      <div className="flex-1 overflow-auto md:ml-64">
+      <div
+        className={cn(
+          'flex-1 overflow-y-auto hide-scrollbar max-h-[calc(100vh-0rem)] md:ml-64',
+          (isFormVisible || editingItem) && 'modal-active'
+        )}
+      >
         <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-20">
           <Navbar
             onAddItemClick={() => setIsFormVisible(true)}
